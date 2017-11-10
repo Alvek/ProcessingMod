@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NCE.UTscanner.Processing
+namespace NCE.Processing
 {
     /// <summary>
     /// Базовый клас с обязательными настройками фильтрации

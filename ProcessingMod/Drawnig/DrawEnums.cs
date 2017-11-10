@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NCE.UTscanner.Processing.Drawing
+namespace NCE.Processing.Drawing
 {
     /// <summary>
     /// Список политик роста массива точек

@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ZedGraph;
 
-namespace NCE.UTscanner.Processing.Drawing
+namespace NCE.Processing.Drawing
 {
     /// <summary>
     /// Базовый клас для точек отрисовки

@@ -1,6 +1,6 @@
 ﻿using NCE.CommonData;
 using NCE.UTscanner.ModulesCommonData;
-using NCE.UTscanner.Processing.Drawing;
+using NCE.Processing.Drawing;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using ZedGraph;
 
-namespace NCE.UTscanner.Processing.Drawing
+namespace NCE.Processing.Drawing
 {
     public class Drawer : IConvertedSplitterTarget, ILightBarrierSplitterTarget, IReceivableSourceBlock<List<Channel>>, ITargetBlock<List<Channel>>, IModule
     {

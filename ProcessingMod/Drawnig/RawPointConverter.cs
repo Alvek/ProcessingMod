@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using ZedGraph;
 
-namespace NCE.UTscanner.Processing.Drawing
+namespace NCE.Processing.Drawing
 {
     public class Converter : IPropagatorBlock<byte[], List<Channel>>, IRawDataInputModule
     {

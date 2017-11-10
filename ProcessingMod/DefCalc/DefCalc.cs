@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Forms;
 
-namespace NCE.UTscanner.Processing
+namespace NCE.Processing
 {
     public class LinearDefCalc : ILightBarrierSplitterTarget, IReceivableSourceBlock<byte[]>, ITargetBlock<byte[]>, IRawDataInputModule
     {

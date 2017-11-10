@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace NCE.UTscanner.Processing
+namespace NCE.Processing
 {
     /// <summary>
     /// Модуль краскоотметки
