@@ -69,7 +69,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\CommonData.dll" />
-    <Content Include="lib\CommonData.pdb" />
     <Content Include="lib\ModulesCommonData.dll" />
     <Content Include="License-LGPL.txt" />
   </ItemGroup>

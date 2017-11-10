@@ -1,5 +1,5 @@
 ﻿using NCE.CommonData;
-using NCE.UTscanner.ModulesCommonData;
+using NCE.ModulesCommonData;
 using NCE.Processing.Drawing;
 using System;
 using System.Collections.Generic;
