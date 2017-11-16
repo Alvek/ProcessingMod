@@ -90,7 +90,7 @@ namespace NCE.Processing.Drawing
         /// <param name="dataStructManager">Менеджер</param>
         /// <param name="policy">Политика роста массива точек</param>
         /// <param name="channelsDeadZoneStartOffset">Список офсетов</param>
-        public Drawer(ZedGraphControl[] zedControls, DrawSettings[] drawSettings, DataTypeManager dataStructManager, PointOverflowPolicy policy, /*Dictionary<int, double>*/ double channelsDeadZoneStartOffset)
+        public Drawer(ZedGraphControl[] zedControls, DrawSettings[] drawSettings, DataTypeManager dataStructManager, PointOverflowPolicy policy, /*Dictionary<int, double>*/ double channelsDeadZoneStartOffset, Color deadZoneColor)
         {
             if (zedControls == null)
                 throw new ArgumentNullException("ZedControls array can't be null!");
@@ -136,7 +136,7 @@ namespace NCE.Processing.Drawing
 
 
 
-            InitZedControls(drawSettings, zedControls);
+            InitZedControls(drawSettings, zedControls, deadZoneColor);
             //PropagateCompletion - обазятелен, передача завершения сбора в блок отрисовки
             _innerBuffer.LinkTo(_drawerBlock, new DataflowLinkOptions() { PropagateCompletion = true });
         }
@@ -259,7 +259,7 @@ namespace NCE.Processing.Drawing
         /// </summary>
         /// <param name="settings">Настройки отрисовки</param>
         /// <param name="zedControls">Контролы</param>
-        private void InitZedControls(DrawSettings[] settings, ZedGraphControl[] zedControls)
+        private void InitZedControls(DrawSettings[] settings, ZedGraphControl[] zedControls, Color deadZoneColor)
         {
             for (int i = 0; i < zedControls.Length; i++)
             {
@@ -284,7 +284,7 @@ namespace NCE.Processing.Drawing
                         new PointPair( _channelsDeadZoneStartOffset/*[settings[i].ChannelSettings[channel].ChannelIdx]*/, pane.YAxis.Scale.Min),
                         new PointPair( _channelsDeadZoneStartOffset/*[settings[i].ChannelSettings[channel].ChannelIdx]*/, pane.YAxis.Scale.Max)
                     },
-                    Color.White);
+                    deadZoneColor);
                 }
 
 
