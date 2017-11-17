@@ -269,8 +269,16 @@ namespace NCE.Processing
                     {
                         if (_paintCoords[id][gateIdx].Count > 0 && _paintCoords[id][gateIdx].Peek() < xPoint - _delay)
                         {
-                            _paintCoords[id][gateIdx].Dequeue();
-                            double lenght = _startStopCoord[id][gateIdx][0].StopCoord - _startStopCoord[id][gateIdx][0].StartCoord;
+                            double defCoord = _paintCoords[id][gateIdx].Dequeue();
+                            double lenght = 0;
+                            if (_startStopCoord[id][gateIdx][0].DefectEndReached)
+                            {
+                                lenght = _startStopCoord[id][gateIdx][0].StopCoord - _startStopCoord[id][gateIdx][0].StartCoord;
+                            }
+                            else
+                            {
+                                lenght = defCoord - _startStopCoord[id][gateIdx][0].StartCoord;
+                            }
                             if (_defCaclSettings.MinDefectLenght < lenght)
                             {
                                 _flags[id][gateIdx] = 1;
