@@ -267,7 +267,7 @@ namespace NCE.Processing
 
                     foreach (var gateDetected in _manager.GateDetIterator(rawData[i * _manager.FrameSize + _manager.DetOffset]))
                     {
-                        if (_paintCoords[id][gateIdx].Count > 0 && _paintCoords[id][gateIdx].Peek() == xPoint - _delay)
+                        if (_paintCoords[id][gateIdx].Count > 0 && _paintCoords[id][gateIdx].Peek() < xPoint - _delay)
                         {
                             _paintCoords[id][gateIdx].Dequeue();
                             double lenght = _startStopCoord[id][gateIdx][0].StopCoord - _startStopCoord[id][gateIdx][0].StartCoord;

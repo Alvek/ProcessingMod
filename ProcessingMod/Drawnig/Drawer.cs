@@ -55,6 +55,10 @@ namespace NCE.Processing.Drawing
         /// </summary>
         private /*Dictionary<int, double>*/double _channelsDeadZoneStartOffset;
         /// <summary>
+        /// Список офсетов
+        /// </summary>
+        private /*Dictionary<int, double>*/double _channelsDeadZoneEndOffset;
+        /// <summary>
         /// Флаг сохранения лайт барьера
         /// </summary>
         private bool _saveStopCoord = false;
@@ -66,6 +70,7 @@ namespace NCE.Processing.Drawing
         /// Координата лайтбарьера
         /// </summary>
         private double _barriedCoord;
+        private Color _deadZoneColor;
 
         public string ModuleName
         {
@@ -90,7 +95,8 @@ namespace NCE.Processing.Drawing
         /// <param name="dataStructManager">Менеджер</param>
         /// <param name="policy">Политика роста массива точек</param>
         /// <param name="channelsDeadZoneStartOffset">Список офсетов</param>
-        public Drawer(ZedGraphControl[] zedControls, DrawSettings[] drawSettings, DataTypeManager dataStructManager, PointOverflowPolicy policy, /*Dictionary<int, double>*/ double channelsDeadZoneStartOffset, Color deadZoneColor)
+        public Drawer(ZedGraphControl[] zedControls, DrawSettings[] drawSettings, DataTypeManager dataStructManager, PointOverflowPolicy policy,
+                        double channelsDeadZoneStartOffset, double channelsDeadZoneEndOffset, Color deadZoneColor)
         {
             if (zedControls == null)
                 throw new ArgumentNullException("ZedControls array can't be null!");
@@ -109,13 +115,15 @@ namespace NCE.Processing.Drawing
             _drawSettings = drawSettings;
             _dataStructManager = dataStructManager;
             _channelsDeadZoneStartOffset = channelsDeadZoneStartOffset;
+            _channelsDeadZoneEndOffset = channelsDeadZoneStartOffset;
+            _deadZoneColor = deadZoneColor;
 
             Action<List<Channel>> act = Draw;
             _drawerBlock = new ActionBlock<List<Channel>>(act, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1, });//com maxDeg
             //Отрисовка последних точек по завершению сбора
-            _drawerBlock.Completion.ContinueWith(t =>
-            { InvalidatePointOnComplete(); }
-                );
+            _drawerBlock.Completion.ContinueWith(
+                t => { InvalidatePointOnComplete(); }
+            );
 
             _channelPoints = new LinearBscanPoints[zedControls.Length][][];
             _channelToPointArr = new Dictionary<int, LinearBscanPoints[]>(zedControls.Length * 2);
@@ -302,7 +310,7 @@ namespace NCE.Processing.Drawing
             if (_saveStopCoord && !_stopCoordSaved)
             {
 
-                DrawDeadZoneEndCurve(_barriedCoord - _channelsProbeOffset[channels[0].ChannelId], _zedControls);
+                DrawDeadZoneEndCurve(_barriedCoord - _channelsProbeOffset[channels[0].ChannelId] - _channelsDeadZoneEndOffset, _zedControls, _deadZoneColor);
                 _stopCoordSaved = true;
             }
             double maxX = _zedControls[0].GraphPane.XAxis.Scale.Max; //TODO fix [0] 
@@ -339,7 +347,7 @@ namespace NCE.Processing.Drawing
         /// </summary>
         /// <param name="xCoord">Х координата метки</param>
         /// <param name="zedC">Список контролов в которых будем рисовать</param>
-        private void DrawDeadZoneEndCurve(double xCoord, ZedGraphControl[] zedC)
+        private void DrawDeadZoneEndCurve(double xCoord, ZedGraphControl[] zedC, Color deadZoneColor)
         {
 
             foreach (var control in zedC)
@@ -351,7 +359,7 @@ namespace NCE.Processing.Drawing
                         new PointPair( xCoord, pane.YAxis.Scale.Min),
                         new PointPair( xCoord, pane.YAxis.Scale.Max)
                     },
-                 Color.White);
+                 deadZoneColor);
             }
         }
         /// <summary>

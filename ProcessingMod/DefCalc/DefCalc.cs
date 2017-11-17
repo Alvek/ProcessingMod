@@ -305,7 +305,7 @@ namespace NCE.Processing
             var idx = _defectsAddedToDgv++;
             _dgView.Invoke((MethodInvoker)delegate
             {
-                _dgView.Rows.Add(new object[] { idx, _manager.GetBoard(def.DataTypeId), _manager.GetChannel(def.DataTypeId), def.GateName, def.StartPoint, def.Lenght });
+                _dgView.Rows.Add(new object[] { idx, _manager.GetBoard(def.DataTypeId), _manager.GetChannel(def.DataTypeId), def.GateName, (int)def.StartPoint, (int)def.Lenght });
             });
         }
 
