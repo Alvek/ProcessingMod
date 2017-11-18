@@ -115,7 +115,7 @@ namespace NCE.Processing.Drawing
             _drawSettings = drawSettings;
             _dataStructManager = dataStructManager;
             _channelsDeadZoneStartOffset = channelsDeadZoneStartOffset;
-            _channelsDeadZoneEndOffset = channelsDeadZoneStartOffset;
+            _channelsDeadZoneEndOffset = channelsDeadZoneEndOffset;
             _deadZoneColor = deadZoneColor;
 
             Action<List<Channel>> act = Draw;
