@@ -12,7 +12,8 @@ namespace NCE.Processing
 {
     public class LinearDefCalc : ILightBarrierSplitterTarget, IReceivableSourceBlock<byte[]>, ITargetBlock<byte[]>, IRawDataInputModule
     {
-        public const char splitChar = '#';
+        public const string DefSplitChar = "#";
+        public const string DefInnerSplitChar = "@";
 
         /// <summary>
         /// Внутренний буфер
@@ -29,7 +30,7 @@ namespace NCE.Processing
         /// <summary>
         /// Грид записи дефеков
         /// </summary>
-        private DataGridView _dgView;
+        //private DataGridView _dgView;
         /// <summary>
         /// Список дефектов, ключь - ID канала и строб по формуле(см. код)
         /// </summary>
@@ -85,6 +86,10 @@ namespace NCE.Processing
         /// Для создания строки дефектов
         /// </summary>
         private bool _sbDone = false;
+        /// <summary>
+        /// Список дефектов
+        /// </summary>
+        private List<string> _defectsList = new List<string>(30);
 
 
         /// <summary>
@@ -112,15 +117,15 @@ namespace NCE.Processing
         /// <param name="channelsDeadZoneStartOffset">Список офсетов</param>
         /// <param name="channelsDeadZoneEndOffset">Список офсетов</param>
         /// <param name="multiplier">Шаг сканирования</param>
-        public LinearDefCalc(DataGridView dgView, DataTypeManager manager, /*LinearDefCalcSettings*/ int defCalcSettings, Dictionary<int, double> channelsStartOffset,
+        public LinearDefCalc(DataTypeManager manager, /*LinearDefCalcSettings*/ int defCalcSettings, Dictionary<int, double> channelsStartOffset,
             /*Dictionary<int, double>*/ double channelsDeadZoneStartOffset, /*Dictionary<int, double>*/ double channelsDeadZoneEndOffset, double multiplier)//, List<Offset> probeOffset)
         {
             if (manager.DetOffset == -1)
                 throw new ArgumentOutOfRangeException("Det is not present in DataType!");
 
             _multiplier = multiplier;
-            _dgView = dgView;
-            _dgView.Rows.Clear();
+            //_dgView = dgView;
+            //_dgView.Rows.Clear();
             _manager = manager;
             //_defCaclSettings = defCaclSettings;
             _defCaclSettings = new LinearDefCalcSettings(defCalcSettings, 0);
@@ -134,12 +139,12 @@ namespace NCE.Processing
             //    _channelProbeOffset.Add(offset.BoardId * 16 + offset.ChannelId, offset.Mm);
             //}
             //Если есть дефект который незаписали еще в грид и мы закончили сканирование - нужно записать его
-            _defCalcBlock.Completion.ContinueWith(
-                (FinishDefAdd) =>
-                {
-                    AddDefOnComplete();
-                }
-                );
+            //_defCalcBlock.Completion.ContinueWith(
+            //    (FinishDefAdd) =>
+            //    {
+            //        AddDefOnComplete();
+            //    }
+            //    );
             //PropagateCompletion - обязателен, авто передача завершения работы модулю подсчета.
             _innerBuffer.LinkTo(_defCalcBlock, new DataflowLinkOptions() { PropagateCompletion = true });
 
@@ -212,14 +217,12 @@ namespace NCE.Processing
 
             if (!_sbDone)
             {
-                foreach (DataGridViewRow row in _dgView.Rows)
-                {
-                    foreach (DataGridViewCell cell in row.Cells)
+                    foreach (var def in _defectsList)
                     {
-                        _sb.Append(cell.Value.ToString());
-                        _sb.Append(splitChar);
+                        _sb.Append(def);
+                        _sb.Append(DefSplitChar);
                     }
-                }
+                
                 _sbDone = true;
             }
             return _sb.ToString();
@@ -269,8 +272,14 @@ namespace NCE.Processing
                             if (_defects.ContainsKey(defKey))
                             {
                                 if (_defCaclSettings.MinDefectLenght < _defects[defKey].Lenght)
-                                    AddDataToDgv(_defects[defKey]);
-                                _defects.Remove(defKey);
+                                {
+                                    //AddDataToDgv(_defects[defKey]);
+                                    var def = _defects[defKey];
+                                    _defectsList.Add(string.Join(DefInnerSplitChar, new string[]{(_defectsList.Count + 1).ToString(),
+                                        _manager.GetBoard(def.DataTypeId).ToString(), _manager.GetChannel(def.DataTypeId).ToString(),
+                                        def.GateName, def.StartPoint.ToString("N0"), def.Lenght.ToString("N0")}));
+                                }
+                            _defects.Remove(defKey);
                             }
                         }
                         gateIdx++;
@@ -285,7 +294,13 @@ namespace NCE.Processing
                         if (_defects.ContainsKey(defKey))
                         {
                             if (_defCaclSettings.MinDefectLenght < _defects[defKey].Lenght)
-                                AddDataToDgv(_defects[defKey]);
+                            {
+                                //AddDataToDgv(_defects[defKey]);
+                                var def = _defects[defKey];
+                                _defectsList.Add(string.Join(DefInnerSplitChar, new string[]{(_defectsList.Count + 1).ToString(),
+                                    _manager.GetBoard(def.DataTypeId).ToString(), _manager.GetChannel(def.DataTypeId).ToString(),
+                                    def.GateName, def.StartPoint.ToString("N0"), def.Lenght.ToString("N0")}));
+                            }
                             _defects.Remove(defKey);
                         }
                         gateIdx++;
@@ -296,29 +311,29 @@ namespace NCE.Processing
             }
 
         }
-        /// <summary>
-        /// Запись дефектов в грид
-        /// </summary>
-        /// <param name="def">Дефект</param>
-        private void AddDataToDgv(Defect def)
-        {
-            var idx = _defectsAddedToDgv++;
-            _dgView.Invoke((MethodInvoker)delegate
-            {
-                _dgView.Rows.Add(new object[] { idx, _manager.GetBoard(def.DataTypeId), _manager.GetChannel(def.DataTypeId), def.GateName, (int)def.StartPoint, (int)def.Lenght });
-            });
-        }
+        ///// <summary>
+        ///// Запись дефектов в грид
+        ///// </summary>
+        ///// <param name="def">Дефект</param>
+        //private void AddDataToDgv(Defect def)
+        //{
+        //    var idx = _defectsAddedToDgv++;
+        //    _dgView.Invoke((MethodInvoker)delegate
+        //    {
+        //        _dgView.Rows.Add(new object[] { idx, _manager.GetBoard(def.DataTypeId), _manager.GetChannel(def.DataTypeId), def.GateName, (int)def.StartPoint, (int)def.Lenght });
+        //    });
+        //}
 
-        /// <summary>
-        /// Запись дефектов в грид по завершению сбора
-        /// </summary>
-        private void AddDefOnComplete()
-        {
-            foreach (var def in _defects.Values)
-            {
-                AddDataToDgv(def);
-            }
-        }
+        ///// <summary>
+        ///// Запись дефектов в грид по завершению сбора
+        ///// </summary>
+        //private void AddDefOnComplete()
+        //{
+        //    foreach (var def in _defects.Values)
+        //    {
+        //        AddDataToDgv(def);
+        //    }
+        //}
     }
     /// <summary>
     /// Клас для описания дефекта
@@ -341,6 +356,6 @@ namespace NCE.Processing
             StartPoint = startPoint;
             Lenght = lenght;
             MaxAmp = maxAmp;
-        }
+        }        
     }
 }
