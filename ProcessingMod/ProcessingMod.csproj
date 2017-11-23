@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="DefCalc\DefCalc.cs" />
     <Compile Include="DefCalc\DefectSettings.cs" />
+    <Compile Include="Drawnig\CombineSettings.cs" />
     <Compile Include="Drawnig\DrawEnums.cs" />
     <Compile Include="Drawnig\Drawer.cs" />
     <Compile Include="Drawnig\Points.cs" />
