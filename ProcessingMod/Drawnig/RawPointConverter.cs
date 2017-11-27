@@ -37,7 +37,7 @@ namespace NCE.Processing.Drawing
         {
             get
             {
-                return _multiplier;
+                return _multiplier; 
             }
             set
             {

@@ -22,7 +22,11 @@ namespace NCE.UTscanner.Processing.Drawnig
         /// </summary>
         public List<int> ChannelsIds { get { return _channelsIds; } }
 
+        public int[] Gates { get => gates; }
+
+
         private List<int> _channelsIds;
         private int _gateCombineMask;
+        private int[] gates;
     }
 }
