@@ -9,15 +9,16 @@ using System.Threading.Tasks.Dataflow;
 
 namespace NCE.UTscanner.Processing.Drawnig
 {
-    public class RawPointsCombineConverter : ITargetBlock<byte[]>, ISourceBlock<List<Channel>>, IRawDataInputModule
+    public class RawPointsCombineConverter : ITargetBlock<byte[]>, ISourceBlock<Channel>, IRawDataInputModule
     {
 
         private BufferBlock<byte[]> _inputBuffer;// = new BufferBlock<byte[]>();
         private ActionBlock<byte[]> _combineAct;
-        private BufferBlock<List<Channel>> _outputBuffer = new BufferBlock<List<Channel>>();
-        private List<Dictionary<int, SummTemp>> _dataToCombine;// = new List<Dictionary<int, SummTemp>>();
+        private BufferBlock<Channel> _outputBuffer = new BufferBlock<Channel>();
+        private List<Dictionary<double, SummTemp>> _dataToCombine;// = new List<Dictionary<int, SummTemp>>();
         private List<CombineRule> _rules;
         private DataTypeManager _manager;
+        private Dictionary<int, Channel> _tempStorage = new Dictionary<int, Channel>();
         private double _multiplier;
         public RawPointsCombineConverter(CombineSettings combSett, DataTypeManager manager, double multiplier)
         {
@@ -28,10 +29,10 @@ namespace NCE.UTscanner.Processing.Drawnig
             _multiplier = multiplier;
 
             _rules = combSett.Rules;
-            _dataToCombine = new List<Dictionary<int, SummTemp>>(combSett.Rules.Count);
+            _dataToCombine = new List<Dictionary<double, SummTemp>>(combSett.Rules.Count);
             for(int i = 0; i < _dataToCombine.Count; i++)
             {
-                _dataToCombine[i] = new Dictionary<int, SummTemp>();
+                _dataToCombine[i] = new Dictionary<double, SummTemp>();
             }
 
 
@@ -74,17 +75,17 @@ namespace NCE.UTscanner.Processing.Drawnig
             _inputBuffer.Complete();
         }
 
-        public List<Channel> ConsumeMessage(DataflowMessageHeader messageHeader, ITargetBlock<List<Channel>> target, out bool messageConsumed)
+        public Channel ConsumeMessage(DataflowMessageHeader messageHeader, ITargetBlock<Channel> target, out bool messageConsumed)
         {
-            return ((ISourceBlock<List<Channel>>)_outputBuffer).ConsumeMessage(messageHeader, target, out messageConsumed);
+            return ((ISourceBlock<Channel>)_outputBuffer).ConsumeMessage(messageHeader, target, out messageConsumed);
         }
 
         public void Fault(Exception exception)
         {
-            ((ISourceBlock<List<Channel>>)_outputBuffer).Fault(exception);
+            ((ISourceBlock<Channel>)_outputBuffer).Fault(exception);
         }
 
-        public IDisposable LinkTo(ITargetBlock<List<Channel>> target, DataflowLinkOptions linkOptions)
+        public IDisposable LinkTo(ITargetBlock<Channel> target, DataflowLinkOptions linkOptions)
         {
             return _outputBuffer.LinkTo(target, linkOptions);
         }
@@ -99,49 +100,81 @@ namespace NCE.UTscanner.Processing.Drawnig
             _inputBuffer.Post(raw);
         }
 
-        public void ReleaseReservation(DataflowMessageHeader messageHeader, ITargetBlock<List<Channel>> target)
+        public void ReleaseReservation(DataflowMessageHeader messageHeader, ITargetBlock<Channel> target)
         {
-            ((ISourceBlock<List<Channel>>)_outputBuffer).ReleaseReservation(messageHeader, target);
+            ((ISourceBlock<Channel>)_outputBuffer).ReleaseReservation(messageHeader, target);
         }
 
-        public bool ReserveMessage(DataflowMessageHeader messageHeader, ITargetBlock<List<Channel>> target)
+        public bool ReserveMessage(DataflowMessageHeader messageHeader, ITargetBlock<Channel> target)
         {
-            return ((ISourceBlock<List<Channel>>)_outputBuffer).ReserveMessage(messageHeader, target);
+            return ((ISourceBlock<Channel>)_outputBuffer).ReserveMessage(messageHeader, target);
         }
         #endregion
 
         private void Combine(byte[] raw)
         {
+            _tempStorage.Clear();
+
+            List<Channel> readyList = new List<Channel>();
             for (int i = 0; i < raw.Length / _manager.FrameSize; i++)
             {
-                int channelId = _manager.GetChannel(raw[_manager.FrameSize * i]);
+                int channelId = _manager.GetChannel(raw[_manager.FrameSize * i]);                
                 for(int rule = 0; i < _rules.Count; rule++)
                 {
                     if (_rules[rule].ChannelsIds.Contains(channelId))
                     {
-                        for(int gate = 0; gate < _manager.GateAmpsOffset.Count; gate++)
+                        double x = BitConverter.ToUInt32(raw, _manager.PointXOffset + _manager.FrameSize * i) * _multiplier;
+                        for (int gate = 0; gate < _manager.GateAmpsOffset.Count; gate++)
                         {
                             //Проверяем нужно ли сумировать этот гейт
                             if ((_rules[rule].GateCombineMask & gate) == gate)
                             {
                                 uint amp = BitConverter.ToUInt32(raw, _manager.PointYOffset + _manager.FrameSize * i);
-                                if (!_dataToCombine[rule].ContainsKey(channelId))
+                                if (!_dataToCombine[rule].ContainsKey(x))
                                 {
-                                    double x = BitConverter.ToUInt32(raw, _manager.PointXOffset + _manager.FrameSize * i) * _multiplier;
-                                    _dataToCombine[rule][channelId] = new SummTemp(x, _rules[rule].ChannelsIds.Count, _rules[rule].Gates);
+                                    
+                                    _dataToCombine[rule][x] = new SummTemp(x, _rules[rule].ChannelsIds.Count, _rules[rule].GatesCount);
                                 }
                                 else
                                 {
-                                    _dataToCombine[rule][channelId].AddAmp(gate, amp);
+                                    _dataToCombine[rule][x].AddAmp(gate, amp);
                                 }
                             }
                         }
                         //Проверить что мы Ready
-                        //SummTemp.REady
+                        if (_dataToCombine[rule][x].IsReady())
+                        {
+                            if (!_tempStorage.ContainsKey(channelId))
+                            {
+                                Channel readyData = new Channel(_manager.GateAmpsOffset.Count);
+                                readyData.ChannelId = channelId;
+                                for (int gate = 0; gate < readyData.Gates.Count; gate++)
+                                {
+                                    readyData.Gates[gate].GatePoints = new List<ZedGraph.PointPair>();
+                                    readyData.Gates[gate].GatePoints.Add(new ZedGraph.PointPair(_dataToCombine[rule][x].XCoord[gate], 
+                                        _dataToCombine[rule][x].YCoord[gate]));
+                                }
+                                _dataToCombine[rule].Remove(x);
+                            }
+                            else
+                            {
+                                for (int gate = 0; gate < _manager.GateAmpsOffset.Count; gate++)
+                                {
+                                    _tempStorage[channelId].Gates[gate].GatePoints.Add(new ZedGraph.PointPair(_dataToCombine[rule][channelId].XCoord[gate],
+                                        _dataToCombine[rule][channelId].YCoord[gate]));
+                                }
+                                _dataToCombine[rule].Remove(x);
+                            }
+                        }
                     }
                 }
             }
+            foreach (var data in _tempStorage)
+            {
+                _outputBuffer.Post(data.Value);
+            }
         }
+
     }
 
     class SummTemp
@@ -164,22 +197,22 @@ namespace NCE.UTscanner.Processing.Drawnig
         /// Счетчик сумирований, по достижению заданого количества отдаем на отрисовку
         /// </summary>
         private int[] _targetSummCount;
-        private int[] _gates;
+        private int _gatesCount;
         //private List<int> collectedChannels;
         public double[] XCoord { get => _xCoord; }
         public int[] CurrentSummCount { get => _currentSummCount; }
         public int[] TargetSummCount { get => _targetSummCount; }
         public uint[] YCoord { get => _yCoord; }
-        public int[] Gates { get => _gates;  }
+        public int GatesCount { get => _gatesCount;  }
 
         //public List<int> CollectedChannels { get => collectedChannels; set => collectedChannels = value; }
 
 
-        public SummTemp(double xCoord, int targetSummCount, int[] gates)
+        public SummTemp(double xCoord, int targetSummCount, int gatesCount)
         {
-            _xCoord = new double[gates.Length];
-            _targetSummCount = new int[gates.Length];
-            _gates = gates;
+            _xCoord = new double[gatesCount];
+            _targetSummCount = new int[gatesCount];
+            _gatesCount = gatesCount;
         }
 
         public void AddAmp(int gate, uint amp)
@@ -188,10 +221,10 @@ namespace NCE.UTscanner.Processing.Drawnig
             _currentSummCount[gate]++;            
         }
 
-        public bool Ready()
+        public bool IsReady()
         {
             bool res = true;
-            for (int gate = 0; gate < _gates.Length; gate++)
+            for (int gate = 0; gate < _gatesCount; gate++)
             {
                 if (_currentSummCount[gate] != _targetSummCount[gate])
                 {

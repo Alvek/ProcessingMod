@@ -159,7 +159,7 @@ namespace NCE.Processing.Drawing
             double x = BitConverter.ToUInt32(rawArray, manager.PointXOffset + coordinateOffset) * _multiplier;// - _channelsStartOffset[id];
             foreach (var offset in manager.GateAmpsOffset)
             {
-                res.Add(new PointPair(x, rawArray[offset + coordinateOffset]));
+                res.Add(new PointPair(x, manager.GetAmp(rawArray, offset + coordinateOffset)));
             }
             return res;
         }

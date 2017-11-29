@@ -8,11 +8,22 @@ namespace NCE.UTscanner.Processing.Drawnig
 {
     public class CombineSettings
     {
-        public List<CombineRule> Rules { get; }
+        private List<CombineRule> _rules;
+
+        public List<CombineRule> Rules { get => _rules; }
+
+        public CombineSettings()
+        {
+            _rules = new List<CombineRule>();
+        }
     }
 
     public class CombineRule
     {
+        private List<int> _channelsIds;
+        private int _gateCombineMask;
+        private int _gatesCount;
+
         /// <summary>
         /// Битовая маска гейтов которые нужно объединять
         /// </summary>
@@ -22,11 +33,14 @@ namespace NCE.UTscanner.Processing.Drawnig
         /// </summary>
         public List<int> ChannelsIds { get { return _channelsIds; } }
 
-        public int[] Gates { get => gates; }
+        public int GatesCount { get => _gatesCount; }
 
+        public CombineRule(List<int> combineChannelsIds, int gateMask)
+        {
+            _channelsIds = combineChannelsIds;
+            _gateCombineMask = gateMask;
 
-        private List<int> _channelsIds;
-        private int _gateCombineMask;
-        private int[] gates;
+            _gatesCount = gateMask / 2 + gateMask % 2;
+        }
     }
 }
