@@ -273,7 +273,7 @@ namespace NCE.Processing.Drawing
             {
                 GraphPane pane = zedControls[i].GraphPane;
                 pane.CurveList.Clear();
-
+                
                 for (int channel = 0; channel < _channelPoints[i].Length; channel++)
                 {
                     //Гейты
