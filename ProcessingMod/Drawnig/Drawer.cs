@@ -144,7 +144,7 @@ namespace NCE.Processing.Drawing
 
 
 
-            //InitZedControls(drawSettings, zedControls, deadZoneColor);
+            InitZedControls(drawSettings, zedControls, deadZoneColor);
             //PropagateCompletion - обазятелен, передача завершения сбора в блок отрисовки
             _innerBuffer.LinkTo(_drawerBlock, new DataflowLinkOptions() { PropagateCompletion = true });
         }

@@ -199,11 +199,11 @@ namespace NCE.UTscanner.Processing.Drawnig
         private int[] _targetSummCount;
         private int _gatesCount;
         //private List<int> collectedChannels;
-        public double[] XCoord { get => _xCoord; }
-        public int[] CurrentSummCount { get => _currentSummCount; }
-        public int[] TargetSummCount { get => _targetSummCount; }
-        public uint[] YCoord { get => _yCoord; }
-        public int GatesCount { get => _gatesCount;  }
+        public double[] XCoord { get { return _xCoord; } }
+        public int[] CurrentSummCount { get { return _currentSummCount; } }
+        public int[] TargetSummCount { get { return _targetSummCount; } }
+        public uint[] YCoord { get { return _yCoord; } }
+        public int GatesCount { get { return _gatesCount; } }
 
         //public List<int> CollectedChannels { get => collectedChannels; set => collectedChannels = value; }
 

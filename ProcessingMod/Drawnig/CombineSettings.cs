@@ -10,7 +10,7 @@ namespace NCE.UTscanner.Processing.Drawnig
     {
         private List<CombineRule> _rules;
 
-        public List<CombineRule> Rules { get => _rules; }
+        public List<CombineRule> Rules { get { return _rules; } }
 
         public CombineSettings()
         {
@@ -33,7 +33,7 @@ namespace NCE.UTscanner.Processing.Drawnig
         /// </summary>
         public List<int> ChannelsIds { get { return _channelsIds; } }
 
-        public int GatesCount { get => _gatesCount; }
+        public int GatesCount { get { return _gatesCount; } }
 
         public CombineRule(List<int> combineChannelsIds, int gateMask)
         {
