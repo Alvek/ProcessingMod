@@ -157,9 +157,9 @@ namespace NCE.Processing.Drawing
             List<PointPair> res = new List<PointPair>(manager.GateAmpsOffset.Count);
             int id = rawArray[coordinateOffset];
             double x = BitConverter.ToUInt32(rawArray, manager.PointXOffset + coordinateOffset) * _multiplier;// - _channelsStartOffset[id];
-            foreach (var offset in manager.GateAmpsOffset)
+            for(int gateIdx = 0; gateIdx < manager.GateAmpsOffset.Count; gateIdx++)
             {
-                res.Add(new PointPair(x, manager.GetAmp(rawArray, offset + coordinateOffset)));
+                res.Add(new PointPair(x, manager.GetAmp(rawArray, coordinateOffset, gateIdx)));
             }
             return res;
         }
