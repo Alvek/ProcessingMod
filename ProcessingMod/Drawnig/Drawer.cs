@@ -12,7 +12,7 @@ using ZedGraph;
 
 namespace NCE.Processing.Drawing
 {
-    public class Drawer : IConvertedSplitterTarget, ILightBarrierSplitterTarget, IReceivableSourceBlock<List<Channel>>, ITargetBlock<List<Channel>>, IModule
+    public class Drawer : IConvertedSplitterTarget, /*ILightBarrierSplitterTarget,*/ IReceivableSourceBlock<List<Channel>>, ITargetBlock<List<Channel>>, IModule
     {
         /// <summary>
         /// Настройки отрисовки
@@ -58,19 +58,19 @@ namespace NCE.Processing.Drawing
         /// Список офсетов
         /// </summary>
         private /*Dictionary<int, double>*/double _channelsDeadZoneEndOffset;
-        /// <summary>
-        /// Флаг сохранения лайт барьера
-        /// </summary>
-        private bool _saveStopCoord = false;
-        /// <summary>
-        /// Флаг для игнорирования повторных попыток сохранить лайт барьера
-        /// </summary>
-        private bool _stopCoordSaved = false;
-        /// <summary>
-        /// Координата лайтбарьера
-        /// </summary>
-        private double _barriedCoord;
-        private Color _deadZoneColor;
+        ///// <summary>
+        ///// Флаг сохранения лайт барьера
+        ///// </summary>
+        //private bool _saveStopCoord = false;
+        ///// <summary>
+        ///// Флаг для игнорирования повторных попыток сохранить лайт барьера
+        ///// </summary>
+        //private bool _stopCoordSaved = false;
+        ///// <summary>
+        ///// Координата лайтбарьера
+        ///// </summary>
+        //private double _barriedCoord;
+        //private Color _deadZoneColor;
 
         public string ModuleName
         {
@@ -96,7 +96,7 @@ namespace NCE.Processing.Drawing
         /// <param name="policy">Политика роста массива точек</param>
         /// <param name="channelsDeadZoneStartOffset">Список офсетов</param>
         public Drawer(ZedGraphControl[] zedControls, DrawSettings[] drawSettings, DataTypeManager dataStructManager, PointOverflowPolicy policy,
-                        double channelsDeadZoneStartOffset, double channelsDeadZoneEndOffset, Color deadZoneColor)
+                        double channelsDeadZoneStartOffset, double channelsDeadZoneEndOffset)//, Color deadZoneColor)
         {
             if (zedControls == null)
                 throw new ArgumentNullException("ZedControls array can't be null!");
@@ -116,7 +116,7 @@ namespace NCE.Processing.Drawing
             _dataStructManager = dataStructManager;
             _channelsDeadZoneStartOffset = channelsDeadZoneStartOffset;
             _channelsDeadZoneEndOffset = channelsDeadZoneEndOffset;
-            _deadZoneColor = deadZoneColor;
+            //_deadZoneColor = deadZoneColor;
 
             Action<List<Channel>> act = Draw;
             _drawerBlock = new ActionBlock<List<Channel>>(act, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1, });//com maxDeg
@@ -144,7 +144,7 @@ namespace NCE.Processing.Drawing
 
 
 
-            InitZedControls(drawSettings, zedControls, deadZoneColor);
+            InitZedControls(drawSettings, zedControls);//, deadZoneColor);
             //PropagateCompletion - обазятелен, передача завершения сбора в блок отрисовки
             _innerBuffer.LinkTo(_drawerBlock, new DataflowLinkOptions() { PropagateCompletion = true });
         }
@@ -195,14 +195,15 @@ namespace NCE.Processing.Drawing
             ((IReceivableSourceBlock<List<Channel>>)_innerBuffer).Fault(exception);
         }
         #endregion
-        /// <summary>
-        /// Флаг для сохранения лайт барьера
-        /// </summary>
-        public void LightBarrierReached(double barrierCoord)
-        {
-            _barriedCoord = barrierCoord;
-            _saveStopCoord = true;
-        }
+
+        ///// <summary>
+        ///// Флаг для сохранения лайт барьера
+        ///// </summary>
+        //public void LightBarrierReached(double barrierCoord)
+        //{
+        //    _barriedCoord = barrierCoord;
+        //    _saveStopCoord = true;
+        //}
 
         public double GetLastCoord()
         {
@@ -267,7 +268,7 @@ namespace NCE.Processing.Drawing
         /// </summary>
         /// <param name="settings">Настройки отрисовки</param>
         /// <param name="zedControls">Контролы</param>
-        private void InitZedControls(DrawSettings[] settings, ZedGraphControl[] zedControls, Color deadZoneColor)
+        private void InitZedControls(DrawSettings[] settings, ZedGraphControl[] zedControls)//, Color deadZoneColor)
         {
             for (int i = 0; i < zedControls.Length; i++)
             {
@@ -286,13 +287,13 @@ namespace NCE.Processing.Drawing
                         // Размер ромбиков
                         myCurve.Symbol.Size = 1;
                     }
-                    //DeadZone start
-                    myCurve = pane.AddCurve(pane.Title.Text, new PointPairList()
-                    {
-                        new PointPair( _channelsDeadZoneStartOffset/*[settings[i].ChannelSettings[channel].ChannelIdx]*/, pane.YAxis.Scale.Min),
-                        new PointPair( _channelsDeadZoneStartOffset/*[settings[i].ChannelSettings[channel].ChannelIdx]*/, pane.YAxis.Scale.Max)
-                    },
-                    deadZoneColor);
+                    ////DeadZone start
+                    //myCurve = pane.AddCurve(pane.Title.Text, new PointPairList()
+                    //{
+                    //    new PointPair( _channelsDeadZoneStartOffset/*[settings[i].ChannelSettings[channel].ChannelIdx]*/, pane.YAxis.Scale.Min),
+                    //    new PointPair( _channelsDeadZoneStartOffset/*[settings[i].ChannelSettings[channel].ChannelIdx]*/, pane.YAxis.Scale.Max)
+                    //},
+                    //deadZoneColor);
                 }
 
 
@@ -307,12 +308,12 @@ namespace NCE.Processing.Drawing
         private void Draw(List<Channel> channels)
         {
             //Отрисовка лайт барьера
-            if (_saveStopCoord && !_stopCoordSaved)
-            {
+            //if (_saveStopCoord && !_stopCoordSaved)
+            //{
 
-                DrawDeadZoneEndCurve(_barriedCoord - _channelsProbeOffset[channels[0].ChannelId] - _channelsDeadZoneEndOffset, _zedControls, _deadZoneColor);
-                _stopCoordSaved = true;
-            }
+            //    DrawDeadZoneEndCurve(_barriedCoord - _channelsProbeOffset[channels[0].ChannelId] - _channelsDeadZoneEndOffset, _zedControls, _deadZoneColor);
+            //    _stopCoordSaved = true;
+            //}
             double maxX = _zedControls[0].GraphPane.XAxis.Scale.Max; //TODO fix [0] 
             foreach (var channel in channels)
             {

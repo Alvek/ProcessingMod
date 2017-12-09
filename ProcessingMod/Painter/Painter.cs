@@ -245,8 +245,8 @@ namespace NCE.Processing
                 {
                     if (!_startStopCoord.ContainsKey(id))
                     {
-                        var list = new List<StartStopCoord>[_manager.GateAmpsOffset.Count];
-                        for (int j = 0; j < _manager.GateAmpsOffset.Count; j++)
+                        var list = new List<StartStopCoord>[DataTypeManager.GateMaxCount];
+                        for (int j = 0; j < DataTypeManager.GateMaxCount; j++)
                         {
                             list[j] = new List<StartStopCoord>();
                             list[j].Add(new StartStopCoord());
@@ -256,12 +256,12 @@ namespace NCE.Processing
                     }
                     if (!_flags.ContainsKey(id))
                     {
-                        _flags.Add(id, new int[_manager.GateAmpsOffset.Count]);
+                        _flags.Add(id, new int[DataTypeManager.GateMaxCount]);
                     }
                     if (!_paintCoords.ContainsKey(id))
                     {
                         _paintCoords.Add(id, new List<Queue<double>>());
-                        for (int gateCount = 0; gateCount < _manager.GateAmpsOffset.Count; gateCount++)
+                        for (int gateCount = 0; gateCount < DataTypeManager.GateMaxCount; gateCount++)
                             _paintCoords[id].Add(new Queue<double>());
                     }
 
