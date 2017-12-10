@@ -73,23 +73,23 @@ namespace NCE.Processing
         private double _multiplier;
         /// <summary>
         /// Количество записаных дефектов
-        /// </summary>
-        private int _defectsAddedToDgv = 1;
+        ///// </summary>
+        //private int _defectsAddedToDgv = 1;
         /// <summary>
         /// Датчик проехал координату лайтбарьера
         /// </summary>
         private Dictionary<int, bool> _barrierReachedFlag = new Dictionary<int, bool>();
         /// <summary>
         /// Для создания строки дефектов
-        /// </summary>
-        private StringBuilder _sb = new StringBuilder();
+        ///// </summary>
+        //private StringBuilder _sb = new StringBuilder();
         /// Для создания строки дефектов
-        /// </summary>
-        private bool _sbDone = false;
+        ///// </summary>
+        //private bool _sbDone = false;
         /// <summary>
         /// Список дефектов
         /// </summary>
-        private List<string> _defectsList = new List<string>(30);
+        private List<Defect> _defectsList = new List<Defect>(32);
 
 
         /// <summary>
@@ -98,6 +98,16 @@ namespace NCE.Processing
         public Dictionary<int, bool> BarrierReached
         {
             get { return _barrierReachedFlag; }
+        }
+        /// <summary>
+        /// Списрк дефектов
+        /// </summary>
+        public List<Defect> DefectList
+        {
+            get
+            {
+                return _defectsList;
+            }
         }
         public string ModuleName
         {
@@ -211,23 +221,7 @@ namespace NCE.Processing
             //_saveStopCoord = true;
             _stopCoord = barrierCoord;
         }
-
-        public string GetDefectStringForSave()
-        {
-
-            if (!_sbDone)
-            {
-                    foreach (var def in _defectsList)
-                    {
-                        _sb.Append(def);
-                        _sb.Append(DefSplitChar);
-                    }
-                
-                _sbDone = true;
-            }
-            return _sb.ToString();
-        }
-
+        
         /// <summary>
         /// Функция подсчета дефектов
         /// </summary>
@@ -275,9 +269,10 @@ namespace NCE.Processing
                                 {
                                     //AddDataToDgv(_defects[defKey]);
                                     var def = _defects[defKey];
-                                    _defectsList.Add(string.Join(DefInnerSplitChar, new string[]{(_defectsList.Count + 1).ToString(),
-                                        _manager.GetBoard(def.DataTypeId).ToString(), _manager.GetChannel(def.DataTypeId).ToString(),
-                                        def.GateName, def.StartPoint.ToString("N0"), def.Lenght.ToString("N0")}));
+                                    _defectsList.Add(def);
+                                    //_defectsList.Add(string.Join(DefInnerSplitChar, new string[]{(_defectsList.Count + 1).ToString(),
+                                    //    _manager.GetBoard(def.ChannelId).ToString(), _manager.GetChannel(def.ChannelId).ToString(),
+                                    //    def.GateName, def.StartPoint.ToString("N0"), def.Lenght.ToString("N0")}));
                                 }
                             _defects.Remove(defKey);
                             }
@@ -297,9 +292,10 @@ namespace NCE.Processing
                             {
                                 //AddDataToDgv(_defects[defKey]);
                                 var def = _defects[defKey];
-                                _defectsList.Add(string.Join(DefInnerSplitChar, new string[]{(_defectsList.Count + 1).ToString(),
-                                    _manager.GetBoard(def.DataTypeId).ToString(), _manager.GetChannel(def.DataTypeId).ToString(),
-                                    def.GateName, def.StartPoint.ToString("N0"), def.Lenght.ToString("N0")}));
+                                _defectsList.Add(def);
+                                //_defectsList.Add(string.Join(DefInnerSplitChar, new string[]{(_defectsList.Count + 1).ToString(),
+                                //    _manager.GetBoard(def.ChannelId).ToString(), _manager.GetChannel(def.ChannelId).ToString(),
+                                //    def.GateName, def.StartPoint.ToString("N0"), def.Lenght.ToString("N0")}));
                             }
                             _defects.Remove(defKey);
                         }
@@ -338,21 +334,21 @@ namespace NCE.Processing
     /// <summary>
     /// Клас для описания дефекта
     /// </summary>
-    class Defect
+    public class Defect
     {
         public string GateName { get; }
         /// <summary>
         /// Id - board\channel
         /// </summary>
-        public byte DataTypeId { get; }
+        public byte ChannelId { get; }
         public double StartPoint { get; }
         public double Lenght { get; set; }
         public double MaxAmp { get; set; }
 
-        public Defect(string gateName, byte dataTypeId, double startPoint, double lenght = 1, double maxAmp = 0)
+        public Defect(string gateName, byte channelId, double startPoint, double lenght = 1, double maxAmp = 0)
         {
             GateName = gateName;
-            DataTypeId = dataTypeId;
+            ChannelId = channelId;
             StartPoint = startPoint;
             Lenght = lenght;
             MaxAmp = maxAmp;
