@@ -12,8 +12,8 @@ namespace NCE.Processing
 {
     public class LinearDefCalc : ILightBarrierSplitterTarget, IReceivableSourceBlock<byte[]>, ITargetBlock<byte[]>, IRawDataInputModule
     {
-        public const string DefSplitChar = "#";
-        public const string DefInnerSplitChar = "@";
+        //public const string DefSplitChar = "#";
+        //public const string DefInnerSplitChar = "@";
 
         /// <summary>
         /// Внутренний буфер
