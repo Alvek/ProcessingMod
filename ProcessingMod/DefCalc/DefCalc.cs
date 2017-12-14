@@ -253,7 +253,7 @@ namespace NCE.Processing
                             //Новый дефект
                             if (!_defects.ContainsKey(defKey))
                             {
-                                var tempDef = new Defect(_manager.GateNames[gateIdx], id, xPoint, _multiplier);
+                                var tempDef = new Defect(_manager.AllGateNames[gateIdx], id, xPoint, _multiplier);
                                 _defects.Add(defKey, tempDef);
                             }
                             else

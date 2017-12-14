@@ -50,14 +50,14 @@ namespace NCE.Processing.Drawing
         /// Список офсетов
         /// </summary>
         private Dictionary<int, double> _channelsProbeOffset = new Dictionary<int, double>();
-        /// <summary>
-        /// Список офсетов
-        /// </summary>
-        private /*Dictionary<int, double>*/double _channelsDeadZoneStartOffset;
-        /// <summary>
-        /// Список офсетов
-        /// </summary>
-        private /*Dictionary<int, double>*/double _channelsDeadZoneEndOffset;
+        ///// <summary>
+        ///// Список офсетов
+        ///// </summary>
+        //private /*Dictionary<int, double>*/double _channelsDeadZoneStartOffset;
+        ///// <summary>
+        ///// Список офсетов
+        ///// </summary>
+        ////private /*Dictionary<int, double>*/double _channelsDeadZoneEndOffset;
         ///// <summary>
         ///// Флаг сохранения лайт барьера
         ///// </summary>
@@ -95,8 +95,8 @@ namespace NCE.Processing.Drawing
         /// <param name="dataStructManager">Менеджер</param>
         /// <param name="policy">Политика роста массива точек</param>
         /// <param name="channelsDeadZoneStartOffset">Список офсетов</param>
-        public Drawer(ZedGraphControl[] zedControls, DrawSettings[] drawSettings, DataTypeManager dataStructManager, PointOverflowPolicy policy,
-                        double channelsDeadZoneStartOffset, double channelsDeadZoneEndOffset)//, Color deadZoneColor)
+        public Drawer(ZedGraphControl[] zedControls, DrawSettings[] drawSettings, DataTypeManager dataStructManager, PointOverflowPolicy policy)//,
+                        //double channelsDeadZoneStartOffset, double channelsDeadZoneEndOffset, Color deadZoneColor)
         {
             if (zedControls == null)
                 throw new ArgumentNullException("ZedControls array can't be null!");
@@ -114,8 +114,8 @@ namespace NCE.Processing.Drawing
             _zedControls = zedControls;
             _drawSettings = drawSettings;
             _dataStructManager = dataStructManager;
-            _channelsDeadZoneStartOffset = channelsDeadZoneStartOffset;
-            _channelsDeadZoneEndOffset = channelsDeadZoneEndOffset;
+            //_channelsDeadZoneStartOffset = channelsDeadZoneStartOffset;
+            //_channelsDeadZoneEndOffset = channelsDeadZoneEndOffset;
             //_deadZoneColor = deadZoneColor;
 
             Action<List<Channel>> act = Draw;

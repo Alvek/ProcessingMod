@@ -64,9 +64,8 @@ namespace NCE.Processing.Drawing
         /// <param name="dataStructManager">DataType менеджер</param>
         /// <param name="multiplier">Шаг сканирования</param>
         /// <param name="channelsStartOffset">Список офсетов, ключь ID</param>
-        public Converter(DataTypeManager dataStructManager, double multiplier, Dictionary<int, double> channelsStartOffset)
+        public Converter(DataTypeManager dataStructManager, double multiplier)
         {
-            _channelsStartOffset = channelsStartOffset;
             _multiplier = multiplier;
             _dataStructManager = dataStructManager;
             convert = PointsConverter;
