@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NCE.UTscanner.Processing.Drawnig
+namespace NCE.Processing.Drawnig
 {
     public class CombineSettings
     {

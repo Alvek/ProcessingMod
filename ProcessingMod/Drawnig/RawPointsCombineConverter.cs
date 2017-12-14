@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace NCE.UTscanner.Processing.Drawnig
+namespace NCE.Processing.Drawnig
 {
     public class RawPointsCombineConverter : ITargetBlock<byte[]>, ISourceBlock<List<Channel>>, IRawDataInputModule
     {
