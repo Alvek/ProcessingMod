@@ -11,6 +11,7 @@ namespace NCE.UTscanner.Processing.Drawnig
 {
     public class RawPointsCombineConverter : ITargetBlock<byte[]>, ISourceBlock<List<Channel>>, IRawDataInputModule
     {
+        private const double _maxAmp = 100;
 
         private BufferBlock<byte[]> _inputBuffer = new BufferBlock<byte[]>();
         private ActionBlock<byte[]> _combineAct;
@@ -60,6 +61,7 @@ namespace NCE.UTscanner.Processing.Drawnig
                 }
                 );
 
+            SummTemp.MaxAmpValue = _maxAmp;
 
             //PropagateCompletion - обязателен, авто передача завершения работы модулю подсчета.
             _inputBuffer.LinkTo(_combineAct, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -261,6 +263,8 @@ namespace NCE.UTscanner.Processing.Drawnig
 
     class SummTemp
     {
+        public static double MaxAmpValue { get; set; }
+
         public enum CachedResult
         {
             NotCached = 0,
@@ -299,6 +303,9 @@ namespace NCE.UTscanner.Processing.Drawnig
             _xCoord[gate] = xCoord;
             _yCoord[gate] = amp;
 
+            if (_yCoord[gate] > MaxAmpValue)
+                _yCoord[gate] = MaxAmpValue;
+
             _ruleChannelsIds = new List<int>[gatesCount];
             _channelsIdsToCollect = new List<int>[gatesCount];
             for (int i = 0; i < gatesCount; i++)
@@ -316,6 +323,8 @@ namespace NCE.UTscanner.Processing.Drawnig
             if (_channelsIdsToCollect[gate].Contains(channelId))
             {
                 _yCoord[gate] += amp;
+                if (_yCoord[gate] > MaxAmpValue)
+                    _yCoord[gate] = MaxAmpValue;
                 _channelsIdsToCollect[gate].Remove(channelId);
             }
             else
