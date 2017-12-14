@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace NCE.UTscanner.Processing.LenghtCalc
+namespace NCE.Processing.LenghtCalc
 {
     public class LinearLenghtCalc : IRawDataInputModule, IModule
     {
