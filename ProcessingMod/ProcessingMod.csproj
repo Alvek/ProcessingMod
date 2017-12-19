@@ -34,6 +34,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\CommonData.dll</HintPath>
     </Reference>
+    <Reference Include="MathNet.Numerics, Version=3.20.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.3.20.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    </Reference>
     <Reference Include="ModulesCommonData, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\ModulesCommonData.dll</HintPath>
@@ -59,12 +62,15 @@
   <ItemGroup>
     <Compile Include="DefCalc\DefCalc.cs" />
     <Compile Include="DefCalc\DefectSettings.cs" />
-    <Compile Include="Drawnig\CombineSettings.cs" />
-    <Compile Include="Drawnig\DrawEnums.cs" />
-    <Compile Include="Drawnig\Drawer.cs" />
-    <Compile Include="Drawnig\Points.cs" />
-    <Compile Include="Drawnig\RawPointConverter.cs" />
-    <Compile Include="Drawnig\RawPointsCombineConverter.cs" />
+    <Compile Include="Drawing\AscanDrawer.cs" />
+    <Compile Include="Drawing\ClassicAscanConverter.cs" />
+    <Compile Include="Drawing\CombineSettings.cs" />
+    <Compile Include="Drawing\CommonDrawer.cs" />
+    <Compile Include="Drawing\DrawEnums.cs" />
+    <Compile Include="Drawing\Drawer.cs" />
+    <Compile Include="Drawing\Points.cs" />
+    <Compile Include="Drawing\RawPointConverter.cs" />
+    <Compile Include="Drawing\RawPointsCombineConverter.cs" />
     <Compile Include="LenghtCalc\LinearLenghtCalc.cs" />
     <Compile Include="Painter\Painter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

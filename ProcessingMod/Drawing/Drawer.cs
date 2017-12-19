@@ -1,6 +1,7 @@
 ﻿using NCE.CommonData;
 using NCE.ModulesCommonData;
 using NCE.Processing.Drawing;
+using NCE.UTscanner.Processing.Drawing;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -95,8 +96,7 @@ namespace NCE.Processing.Drawing
         /// <param name="dataStructManager">Менеджер</param>
         /// <param name="policy">Политика роста массива точек</param>
         /// <param name="channelsDeadZoneStartOffset">Список офсетов</param>
-        public Drawer(ZedGraphControl[] zedControls, DrawSettings[] drawSettings, DataTypeManager dataStructManager, PointOverflowPolicy policy)//,
-                        //double channelsDeadZoneStartOffset, double channelsDeadZoneEndOffset, Color deadZoneColor)
+        public Drawer(ZedGraphControl[] zedControls, DrawSettings[] drawSettings, DataTypeManager dataStructManager, PointOverflowPolicy policy)
         {
             if (zedControls == null)
                 throw new ArgumentNullException("ZedControls array can't be null!");
@@ -114,12 +114,9 @@ namespace NCE.Processing.Drawing
             _zedControls = zedControls;
             _drawSettings = drawSettings;
             _dataStructManager = dataStructManager;
-            //_channelsDeadZoneStartOffset = channelsDeadZoneStartOffset;
-            //_channelsDeadZoneEndOffset = channelsDeadZoneEndOffset;
-            //_deadZoneColor = deadZoneColor;
 
             Action<List<Channel>> act = Draw;
-            _drawerBlock = new ActionBlock<List<Channel>>(act, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1, });//com maxDeg
+            _drawerBlock = new ActionBlock<List<Channel>>(act, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1, });
             //Отрисовка последних точек по завершению сбора
             _drawerBlock.Completion.ContinueWith(
                 t => { InvalidatePointOnComplete(); }
@@ -144,7 +141,7 @@ namespace NCE.Processing.Drawing
 
 
 
-            InitZedControls(drawSettings, zedControls);//, deadZoneColor);
+            InitZedControls(drawSettings, zedControls);
             //PropagateCompletion - обазятелен, передача завершения сбора в блок отрисовки
             _innerBuffer.LinkTo(_drawerBlock, new DataflowLinkOptions() { PropagateCompletion = true });
         }
@@ -344,26 +341,6 @@ namespace NCE.Processing.Drawing
             }
         }
         /// <summary>
-        /// Отрисовка DeadZone end метки
-        /// </summary>
-        /// <param name="xCoord">Х координата метки</param>
-        /// <param name="zedC">Список контролов в которых будем рисовать</param>
-        private void DrawDeadZoneEndCurve(double xCoord, ZedGraphControl[] zedC, Color deadZoneColor)
-        {
-
-            foreach (var control in zedC)
-            {
-                GraphPane pane = control.GraphPane;
-
-                pane.AddCurve(pane.Title.Text, new PointPairList()
-                    {
-                        new PointPair( xCoord, pane.YAxis.Scale.Min),
-                        new PointPair( xCoord, pane.YAxis.Scale.Max)
-                    },
-                 deadZoneColor);
-            }
-        }
-        /// <summary>
         /// Перерисовка по окончанию сбора
         /// </summary>
         private void InvalidatePointOnComplete()
@@ -375,139 +352,5 @@ namespace NCE.Processing.Drawing
         }
         #endregion
 
-    }
-    /// <summary>
-    /// Клас настроек отрсовки
-    /// </summary>
-    public class DrawSettings
-    {
-        private ChannelSettings[] _channelSettings;
-
-        public ChannelSettings[] ChannelSettings
-        {
-            get
-            {
-                return _channelSettings;
-            }
-        }
-
-        public DrawSettings(ChannelSettings[] channelSettings)
-        {
-            for (int i = 0; i < channelSettings.Length; i++)
-            {
-                if (channelSettings[i].ChannelIdx < 0)
-                    throw new ArgumentException("Channel idx is not set!");
-                if (channelSettings[i].ChannelCaption == null)
-                    throw new ArgumentNullException("Channel caption is not set!");
-                if (channelSettings[i].GateColors == null)
-                    throw new ArgumentNullException("Channel gate colors is null!");
-                if (channelSettings[i].GateColors.Count == 0)
-                    throw new ArgumentNullException("Channel gate colors lenght is zero!");
-            }
-            _channelSettings = channelSettings;
-        }
-
-        //public Dictionary<int, double> GetChannelsStartOffset()
-        //{
-        //    Dictionary<int, double> res = new Dictionary<int, double>();
-        //    foreach (var chan in _channelSettings)
-        //    {
-        //        res.Add(chan.ChannelIdx, chan.StartOffset);
-        //    }
-        //    return res;
-        //}
-        //public Dictionary<int, double> GetChannelsDeadZoneStartOffset()
-        //{
-        //    Dictionary<int, double> res = new Dictionary<int, double>();
-        //    foreach (var chan in _channelSettings)
-        //    {
-        //        res.Add(chan.ChannelIdx, chan.DeadZoneStartOffset);
-        //    }
-        //    return res;
-        //}
-        //public Dictionary<int, double> GetChannelsDeadZoneEndOffset()
-        //{
-        //    Dictionary<int, double> res = new Dictionary<int, double>();
-        //    foreach (var chan in _channelSettings)
-        //    {
-        //        res.Add(chan.ChannelIdx, chan.DeadZoneEndOffset);
-        //    }
-        //    return res;
-        //}
-    }
-
-    /// <summary>
-    /// Настройки конкретного ID для отрисовки
-    /// </summary>
-    public class ChannelSettings
-    {
-        private int _channelIdx = 0;
-        private string _channelCaption = "";
-        private int _pointCount = 0;
-        private List<Color> _gateColor;
-        private double _startOffset = 0;
-        private double _deadZoneStartOffset = 0;
-        private double _deadZoneEndOffset = 999999999;
-        public int ChannelIdx
-        {
-            get
-            {
-                return _channelIdx;
-            }
-        }
-
-        public string ChannelCaption
-        {
-            get
-            {
-                return _channelCaption;
-            }
-        }
-        public double StartOffset
-        {
-            get
-            {
-                return _startOffset;
-            }
-        }
-        public double DeadZoneStartOffset
-        {
-            get
-            {
-                return _deadZoneStartOffset;
-            }
-        }
-        public double DeadZoneEndOffset
-        {
-            get
-            {
-                return _deadZoneEndOffset;
-            }
-        }
-        public int PointCount
-        {
-            get
-            {
-                return _pointCount;
-            }
-        }
-        public List<Color> GateColors
-        {
-            get
-            {
-                return _gateColor;
-            }
-        }
-
-        public ChannelSettings(int channelIdx, string channelCaption, int pointCount, List<Color> gateColors, int startOffset, int deadZoneStartOffset, int deadZoneEndOffset)
-        {
-            _channelIdx = channelIdx;
-            _channelCaption = channelCaption;
-            _pointCount = pointCount;
-            _gateColor = gateColors;
-            _startOffset = startOffset;
-            _deadZoneStartOffset = deadZoneStartOffset;
-            _deadZoneEndOffset = deadZoneEndOffset;
-        }
-    }
+    }    
 }

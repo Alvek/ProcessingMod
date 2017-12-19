@@ -28,10 +28,14 @@ namespace NCE.Processing.Drawing
         /// Шаг сканирования
         /// </summary>
         private double _multiplier;
+        ///// <summary>
+        ///// Список офсетов, ключь Id
+        ///// </summary>
+        //private Dictionary<int, double> _channelsStartOffset;
         /// <summary>
-        /// Список офсетов, ключь Id
+        /// Временный список конвертированных данных
         /// </summary>
-        private Dictionary<int, double> _channelsStartOffset;
+        private Dictionary<int, Channel> _parsedChannels = new Dictionary<int, Channel>();
 
         public double Multiplier
         {
@@ -69,7 +73,7 @@ namespace NCE.Processing.Drawing
             _multiplier = multiplier;
             _dataStructManager = dataStructManager;
             convert = PointsConverter;
-            _converterBlock = new TransformBlock<byte[], List<Channel>>(convert);
+            _converterBlock = new TransformBlock<byte[], List<Channel>>(convert, new ExecutionDataflowBlockOptions() {  SingleProducerConstrained = true, MaxDegreeOfParallelism = 1});
         }
 
         #region Public
@@ -119,7 +123,9 @@ namespace NCE.Processing.Drawing
             _converterBlock.Post(data);
         }
         #endregion
+
         #region Private
+
         /// <summary>
         /// Функция конвертации сырых данных в точки отрисовки
         /// </summary>
@@ -127,23 +133,24 @@ namespace NCE.Processing.Drawing
         /// <returns>Точки для отрисовки</returns>
         private List<Channel> PointsConverter(byte[] data)
         {
-            Dictionary<int, Channel> parsedChannels = new Dictionary<int, Channel>();
+            _parsedChannels.Clear();
             for (int i = 0; i < data.Length / _dataStructManager.FrameSize; i++)
             {
                 int id = data[i * _dataStructManager.FrameSize];
-                if (!parsedChannels.ContainsKey(id))
+                if (!_parsedChannels.ContainsKey(id))
                 {
-                    parsedChannels[id] = new Channel(_dataStructManager.GateAmpsOffset.Count);
+                    _parsedChannels[id] = new Channel(_dataStructManager.GateAmpsOffset.Count);
                 }
 
                 var singleParsed = SinglePointConverter(data, i * _dataStructManager.FrameSize, _dataStructManager);
                 for (int j = 0; j < singleParsed.Count; j++)
                 {
-                    parsedChannels[id].Gates[j].GatePoints.Add(singleParsed[j]);
+                    _parsedChannels[id].Gates[j].GatePoints.Add(singleParsed[j]);
                 }
             }
-            return parsedChannels.Values.ToList();
+            return _parsedChannels.Values.ToList();
         }
+
         /// <summary>
         /// Парс одной координаты по указаному офсету
         /// </summary>
@@ -166,42 +173,4 @@ namespace NCE.Processing.Drawing
 
         #endregion
     }
-
-    ///// <summary>
-    ///// Клас для сохранения точек отрисовки
-    ///// </summary>
-    //internal class Channel
-    //{
-    //    private List<Gate> _gates;
-
-    //    public int ChannelId { get; set; }
-    //    public List<Gate> Gates
-    //    {
-    //        get
-    //        {
-    //            return _gates;
-    //        }
-    //    }
-
-    //    public Channel(int gateCount)
-    //    {
-    //        _gates = new List<Gate>(gateCount);
-    //        for (int i = 0; i < gateCount; i++)
-    //        {
-    //            _gates.Add(new Gate());
-    //            _gates[i].Ascans = new List<PointPairList>();
-    //            _gates[i].GatePoints = new List<PointPair>();
-    //        }
-    //    }
-
-    //}
-
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    //internal class Gate
-    //{
-    //    public List<PointPair> GatePoints { get; set; }
-    //    public List<PointPairList> Ascans { get; set; }
-    //}
 }
