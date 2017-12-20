@@ -37,11 +37,11 @@ namespace NCE.UTscanner.Processing.Drawing
         /// <summary>
         /// Список точек для отрисовки [ZedControl][Id][Gate]
         /// </summary>
-        private LinearBscanPoints[][] _channelPoints;
+        private ClassicAscanPoints[][] _channelPoints;
         /// <summary>
         /// Список для связывания Id с массивом точек
         /// </summary>
-        private Dictionary<int, LinearBscanPoints> _channelToPointArr;
+        private Dictionary<int, ClassicAscanPoints> _channelToPointArr;
 
         public Task Completion
         {
@@ -75,14 +75,14 @@ namespace NCE.UTscanner.Processing.Drawing
             _dataStructManager = dataStructManager;
 
 
-            _channelPoints = new LinearBscanPoints[zedControls.Length][];
-            _channelToPointArr = new Dictionary<int, LinearBscanPoints>(zedControls.Length * 2);
+            _channelPoints = new ClassicAscanPoints[zedControls.Length][];
+            _channelToPointArr = new Dictionary<int, ClassicAscanPoints>(zedControls.Length * 2);
             for (int zedControl = 0; zedControl < drawSettings.Length; zedControl++)
             {
-                _channelPoints[zedControl] = new LinearBscanPoints[drawSettings[zedControl].ChannelSettings.Length];
+                _channelPoints[zedControl] = new ClassicAscanPoints[drawSettings[zedControl].ChannelSettings.Length];
                 for (int channelIdx = 0; channelIdx < _channelPoints[zedControl].Length; channelIdx++)
                 {
-                    _channelPoints[zedControl][channelIdx] = new LinearBscanPoints(_drawSettings[zedControl].ChannelSettings[channelIdx].PointCount, PointOverflowPolicy.ClearAndStartFromZero);                    
+                    _channelPoints[zedControl][channelIdx] = new ClassicAscanPoints();                    
                     _channelToPointArr[drawSettings[zedControl].ChannelSettings[channelIdx].ChannelIdx] = _channelPoints[zedControl][channelIdx];
                 }
             }
@@ -150,10 +150,10 @@ namespace NCE.UTscanner.Processing.Drawing
         {
             foreach (var ch in convertedData)
             {
-                foreach (var point in ch.Gates[0].GatePoints)
-                {
-                    _channelToPointArr[ch.ChannelId].AddPoint(point);
-                }
+                //_channelToPointArr[ch.ChannelId] = new ClassicAscanPoints();
+                _channelToPointArr[ch.ChannelId].UpdatePoint(ch.Gates[0].GatePoints.ToArray());
+
+
             }
         }
 
@@ -172,7 +172,7 @@ namespace NCE.UTscanner.Processing.Drawing
                 for (int channel = 0; channel < settings[i].ChannelSettings.Length; channel++)
                 {
                     LineItem myCurve;
-                    myCurve = pane.AddCurve(pane.Title.Text, new double[] { 0 }, new double[] { 0 }, settings[i].ChannelSettings[0].GateColors[0]);
+                    myCurve = pane.AddCurve(pane.Title.Text, _channelPoints[i][channel], settings[i].ChannelSettings[0].GateColors[0]);
                     // Тип заполнения - сплошная заливка
                     myCurve.Symbol.Fill.Type = FillType.Solid;
                     // Размер ромбиков

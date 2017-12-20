@@ -98,7 +98,7 @@ namespace NCE.Processing.Drawing
 
             }
         }
-
+        
         /// <summary>
         /// Добавление новой точки
         /// </summary>
@@ -205,6 +205,63 @@ namespace NCE.Processing.Drawing
                     _data[i] = new PointPair();
                 _idx = 0;
             }
+        }
+    }
+
+    public class ClassicAscanPoints : IPointList
+    {
+        /// <summary>
+        /// Массив точек отрисовки
+        /// </summary>
+        private PointPair[] _data;
+
+        public ClassicAscanPoints()
+        {
+            _data = new PointPair[] { new PointPair() };
+        }
+
+        public ClassicAscanPoints(PointPair[] points)
+        {
+            _data = points;
+        }
+
+        /// <summary>
+        /// Точка отрисовки
+        /// </summary>
+        /// <param name="index">Индекс точки</param>
+        /// <returns></returns>
+        public PointPair this[int index]
+        {
+            get
+            {
+                return _data[index];
+            }          
+        }
+
+        /// <summary>
+        /// Количество точек
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return _data.Length;
+            }
+        }
+
+        public void UpdatePoint(PointPair[] points)
+        {
+            _data = points;
+        }
+
+        /// <summary>
+        /// Клонирование массива
+        /// </summary>
+        public object Clone()
+        {
+            PointPair[] data = new PointPair[_data.Length];
+            Array.Copy(_data, data, data.Length);
+            return new ClassicAscanPoints(data);            
         }
     }
 }

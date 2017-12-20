@@ -31,7 +31,7 @@ namespace NCE.UTscanner.Processing.Drawing
         /// <summary>
         /// Список офсетов, ключь Id
         /// </summary>
-        private Dictionary<int, double> _channelsStartOffset;
+        private Dictionary<int, double> _channelsStartOffset = new Dictionary<int, double>();
         /// <summary>
         /// Временный список конвертированных данных
         /// </summary>
@@ -52,7 +52,7 @@ namespace NCE.UTscanner.Processing.Drawing
             _converterBlock.Complete();
         }
 
-        public ClassicAscanConverter(DataTypeManager dataStructManager, double multiplier, int refreshCount, AscanConverterWorkingMod mod)
+        public ClassicAscanConverter(DataTypeManager dataStructManager, Dictionary<int, double> channelsStartOffset, double multiplier, int refreshCount, AscanConverterWorkingMod mod)
         {
             if (refreshCount < 1)
                 throw new ArgumentOutOfRangeException("Refresh count < 1!");
@@ -61,6 +61,7 @@ namespace NCE.UTscanner.Processing.Drawing
             _dataStructManager = dataStructManager;
             convert = PointsConverter;
             _mod = mod;
+            _channelsStartOffset = channelsStartOffset;
             _refreshCount = refreshCount;
             _converterBlock = new TransformManyBlock<byte[], List<Channel>>(convert, new ExecutionDataflowBlockOptions() { SingleProducerConstrained = true, MaxDegreeOfParallelism = 1 });
         }
@@ -73,7 +74,7 @@ namespace NCE.UTscanner.Processing.Drawing
 
         public void Fault(Exception exception)
         {
-            ((IPropagatorBlock<byte[], List<Channel>>)_converterBlock).Fault(exception);
+            ((IDataflowBlock)_converterBlock).Fault(exception);
         }
 
         public IDisposable LinkTo(ITargetBlock<List<Channel>> target, DataflowLinkOptions linkOptions)
@@ -113,7 +114,7 @@ namespace NCE.UTscanner.Processing.Drawing
             {
                 int id = data[i * _dataStructManager.FrameSize];
                 double xPoint = BitConverter.ToUInt32(data, i * _dataStructManager.FrameSize + _dataStructManager.PointXOffset) * _multiplier - _channelsStartOffset[id];
-                //if (xPoint > _channelsDeadZoneStartOffset && xPoint < _stopCoord - _channelsDeadZoneEndOffset)
+                if (xPoint > 0)
                 {
                     if (!_parsedChannels.ContainsKey(id))
                     {
@@ -164,10 +165,17 @@ namespace NCE.UTscanner.Processing.Drawing
         {
             List<PointPair> res = new List<PointPair>(manager.GateAmpsOffset.Count);
             int id = rawArray[coordinateOffset];
-            double x = BitConverter.ToUInt32(rawArray, manager.PointXOffset + coordinateOffset) * _multiplier;// - _channelsStartOffset[id];
-            foreach(var point in manager.AscanIterator(rawArray, coordinateOffset))
+            //double x = BitConverter.ToUInt32(rawArray, manager.PointXOffset + coordinateOffset) * _multiplier;// - _channelsStartOffset[id];
+
+            int idx = 0;
+            int scansMaxCount = BitConverter.ToUInt16(rawArray, coordinateOffset + manager.AscanPointCountOffset) - 1;
+            int startTime = manager.GetAscanStartTime(rawArray, coordinateOffset);
+            int endTime = manager.GetAscanEndTime(rawArray, coordinateOffset);
+            foreach (var point in manager.AscanIterator(rawArray, coordinateOffset))
             {
+                double x = startTime + (double)(idx * (endTime - startTime)) / scansMaxCount;
                 res.Add(new PointPair(x, point));
+                idx++;
             }
             return res;
         }
