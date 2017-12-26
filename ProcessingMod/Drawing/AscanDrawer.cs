@@ -152,7 +152,8 @@ namespace NCE.UTscanner.Processing.Drawing
             {
                 //_channelToPointArr[ch.ChannelId] = new ClassicAscanPoints();
                 _channelToPointArr[ch.ChannelId].UpdatePoint(ch.Gates[0].GatePoints.ToArray());
-
+                _zedControls[0].GraphPane.XAxis.Scale.Min = _channelToPointArr[ch.ChannelId][0].X;
+                _zedControls[0].GraphPane.XAxis.Scale.Max = _channelToPointArr[ch.ChannelId][_channelToPointArr[ch.ChannelId].Count - 1].X;
 
             }
         }

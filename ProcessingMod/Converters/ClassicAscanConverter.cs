@@ -10,6 +10,9 @@ using ZedGraph;
 
 namespace NCE.UTscanner.Processing.Drawing
 {
+    /// <summary>
+    /// Сырые данные а-сканов в точки отрисовки
+    /// </summary>
     public class ClassicAscanConverter : IPropagatorBlock<byte[], List<Channel>>, IRawDataInputModule
     {
         /// <summary>
@@ -129,6 +132,7 @@ namespace NCE.UTscanner.Processing.Drawing
                         {
                             singleParsed = ParseAscan(data, i * _dataStructManager.FrameSize, _dataStructManager);
                             _parsedChannels[id].Gates[0].GatePoints = singleParsed;
+
                         }
                     }
                     else if (_mod == AscanConverterWorkingMod.SummCollecting)

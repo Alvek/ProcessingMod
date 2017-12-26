@@ -9,6 +9,9 @@ using System.Threading.Tasks.Dataflow;
 
 namespace NCE.Processing.Drawnig
 {
+    /// <summary>
+    /// Суммирует сырые данные разных каналов в один новый
+    /// </summary>
     public class RawPointsCombineConverter : ITargetBlock<byte[]>, ISourceBlock<List<Channel>>, IRawDataInputModule
     {
         private const double _maxAmp = 100;
