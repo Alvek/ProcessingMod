@@ -177,7 +177,7 @@ namespace NCE.UTscanner.Processing.Drawing
             int endTime = manager.GetAscanEndTime(rawArray, coordinateOffset);
             foreach (var point in manager.AscanIterator(rawArray, coordinateOffset))
             {
-                double x = (startTime + (double)(idx * (endTime - startTime)) / scansMaxCount) / 1000;
+                double x = (startTime + (double)(idx * (endTime - startTime)) / scansMaxCount) / 100;
                 res.Add(new PointPair(x, point));
                 idx++;
             }
