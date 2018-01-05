@@ -86,6 +86,7 @@ namespace NCE.UTscanner.Processing.Converters
         private List<Channel> PointsConverter(ConvertedFFT data)
         {
             _tempDict.Clear();
+            int spectrIdx = 0;
             foreach (var spect in data.Spectr)
             {
                 if (!_tempDict.ContainsKey(spect.ChannelId))
@@ -95,12 +96,17 @@ namespace NCE.UTscanner.Processing.Converters
                     _tempDict[spect.ChannelId] = ch;
                 }
                 int idx = 0;
+                double AscanStart = _dataStructManager.GetAscanStartTime(data.RawData, _dataStructManager.FrameSize * spectrIdx);
+                double AscanEnd = _dataStructManager.GetAscanEndTime(data.RawData, _dataStructManager.FrameSize * spectrIdx);
+                double StepA = (AscanEnd - AscanStart) / (BitConverter.ToUInt16(data.RawData, spectrIdx + _dataStructManager.AscanPointCountOffset) - 1) / 1000;
+                double StepF = 1 / StepA / (data.Spectr[0].SpectrFFTData.Length * 2);
+
                 foreach (var point in spect.SpectrFFTData)
                 {
-                    _tempDict[spect.ChannelId].Gates[0].GatePoints.Add(new PointPair(idx, point.Real * point.Real + point.Imaginary * point.Imaginary));
+                    _tempDict[spect.ChannelId].Gates[0].GatePoints.Add(new PointPair(AscanStart + StepF * idx, point.Real * point.Real + point.Imaginary * point.Imaginary));
                     idx++;
                 }
-                 
+                spectrIdx++;
             }
             return _tempDict.Values.ToList();
         }

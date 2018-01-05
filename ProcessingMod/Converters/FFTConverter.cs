@@ -106,12 +106,10 @@ namespace NCE.UTscanner.Processing.Converters
         {
             ConvertedFFT res = new ConvertedFFT(rawData);
             int size = _dataStructManager.FrameSize;
-            //Complex32[][] spectr = new Complex32[rawData.Length / size][];
 
             for (int frame = 0; frame < rawData.Length / size; frame += size)
             {
                 SingleFFTConvert(rawData, frame);
-                //spectr[frame] = _complArray;
                 Complex32[] halfArray = new Complex32[_complArray.Length / 2];
                 Array.Copy(_complArray, halfArray, _complArray.Length / 2);
                 Spectr spec = new Spectr(halfArray, rawData[frame]);
@@ -162,22 +160,8 @@ namespace NCE.UTscanner.Processing.Converters
             }
 
             Fourier.Forward(_complArray);
-
-
-            //for (int i = startOffset, j = 0;
-            //    i < startOffset + _complArray.Length;
-            //    i++, j++)
-            //{
-            //    rawData[i] = (byte)_complArray[j].Real;
-            //}
         }
-
-        //private void ClearComplexArray()
-        //{
-        //    for (int i = 0; i < _complArray.Length; i++)
-        //        _complArray[i] = MathNet.Numerics.Complex32.Zero;
-        //}
-
+        
         private bool IsPowerOfTwo(ulong x)
         {
             return (x & (x - 1)) == 0;
