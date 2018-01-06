@@ -24,7 +24,13 @@ namespace NCE.UTscanner.Processing.DataCombiner
             _converterBlock = new TransformBlock<byte[], byte[]>(_convert, new ExecutionDataflowBlockOptions() { SingleProducerConstrained = true, MaxDegreeOfParallelism = 1 });
         }
 
-        public Task Completion => throw new NotImplementedException();
+        public Task Completion
+        {
+            get
+            {
+                return _converterBlock.Completion;
+            }
+        }
 
         public string ModuleName
         {
