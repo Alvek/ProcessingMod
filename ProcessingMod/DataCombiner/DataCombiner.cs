@@ -93,7 +93,7 @@ namespace NCE.UTscanner.Processing.DataCombiner
             }
             else if (data.Length % _frameSize != 0 && _temp != null)
             {
-                byte[] completeFramesData = new byte[(data.Length + _temp.Length) - ((data.Length + _temp.Length) % _frameSize)];
+                byte[] completeFramesData = new byte[(data.Length + _temp.Length) - ((data.Length + _temp.Length) % _frameSize)];               
                 Buffer.BlockCopy(_temp, 0, completeFramesData, 0, _temp.Length);
                 if ((data.Length + _temp.Length) % _frameSize == 0)
                 {
@@ -104,6 +104,10 @@ namespace NCE.UTscanner.Processing.DataCombiner
                 else
                 {
                     int bytesToCopy = (data.Length + _temp.Length) - ((data.Length + _temp.Length) % _frameSize);
+                    if (bytesToCopy > data.Length)
+                    {
+                        bytesToCopy -= _frameSize;
+                    }
                     Buffer.BlockCopy(data, 0, completeFramesData, _temp.Length, bytesToCopy);
                     _temp = new byte[data.Length - bytesToCopy];
                     Buffer.BlockCopy(data, bytesToCopy, _temp, 0, data.Length - bytesToCopy);
@@ -126,7 +130,10 @@ namespace NCE.UTscanner.Processing.DataCombiner
                 }
                 else
                 {
-                    int bytesToCopy = (data.Length + _temp.Length) - ((data.Length + _temp.Length) % _frameSize);
+                    int bytesToCopy = (data.Length + _temp.Length) - ((data.Length + _temp.Length) % _frameSize); if (bytesToCopy > data.Length)
+                    {
+                        bytesToCopy -= _frameSize;
+                    }
                     Buffer.BlockCopy(data, 0, completeFramesData, _temp.Length, bytesToCopy);
                     _temp = new byte[data.Length - bytesToCopy];
                     Buffer.BlockCopy(data, bytesToCopy, _temp, 0, data.Length - bytesToCopy);
