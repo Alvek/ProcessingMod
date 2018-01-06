@@ -64,6 +64,7 @@
     <Compile Include="Converters\CommonConverter.cs" />
     <Compile Include="Converters\FFTConverter.cs" />
     <Compile Include="Converters\FFTtoGraphPointsConverter.cs" />
+    <Compile Include="DataCombiner\DataCombiner.cs" />
     <Compile Include="DefCalc\DefCalc.cs" />
     <Compile Include="DefCalc\DefectSettings.cs" />
     <Compile Include="Drawing\AscanDrawer.cs" />
