@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using ZedGraph;
 
-namespace NCE.UTscanner.Processing.Converters
+namespace NCE.Processing.Converters
 {
     public class FFTtoGraphPointsConverter : IPropagatorBlock<ConvertedFFT, List<Channel>>, IFFTConvertedInputModule
     {  

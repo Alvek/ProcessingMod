@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using ZedGraph;
 
-namespace NCE.UTscanner.Processing.Drawing
+namespace NCE.Processing.Drawing
 {
     /// <summary>
     /// Сырые данные а-сканов в точки отрисовки

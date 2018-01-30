@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace NCE.UTscanner.Processing.DataCombiner
+namespace NCE.Processing.DataCombiner
 {
     public class DataCombiner : IPropagatorBlock<byte[], byte[]>, IRawDataInputModule
     {

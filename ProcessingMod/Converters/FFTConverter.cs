@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace NCE.UTscanner.Processing.Converters
+namespace NCE.Processing.Converters
 {
     /// <summary>
     /// Применяет БПФ к аскану и отдает дальше по цепочке измененный массив
