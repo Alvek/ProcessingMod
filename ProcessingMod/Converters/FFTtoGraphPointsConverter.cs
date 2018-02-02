@@ -82,7 +82,7 @@ namespace NCE.Processing.Converters
         {
             _converterBlock.Post(data);
         }
-
+        //проверить
         private List<Channel> PointsConverter(ConvertedFFT data)
         {
             _tempDict.Clear();

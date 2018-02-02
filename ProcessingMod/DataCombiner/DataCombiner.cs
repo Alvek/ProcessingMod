@@ -79,62 +79,95 @@ namespace NCE.Processing.DataCombiner
         {
             _converterBlock.Post(raw);
         }
-
+        // переделать!!!
         private byte[] Convert(byte[] data)
         {
-            if (data.Length % _frameSize != 0 && _temp == null)
+            //    if (data.Length % _frameSize != 0 && _temp == null)
+            //    {
+            //        int bytesToCopy = data.Length - (data.Length % _frameSize);
+            //        byte[] completeFramesData = new byte[bytesToCopy];
+            //        Buffer.BlockCopy(data, 0, completeFramesData, 0, bytesToCopy);
+            //        _temp = new byte[data.Length % _frameSize];
+            //        Buffer.BlockCopy(data, bytesToCopy, _temp, 0, data.Length % _frameSize);
+            //        return completeFramesData;
+            //    }
+            //    else if (data.Length % _frameSize != 0 && _temp != null)
+            //    {
+            //        byte[] completeFramesData = new byte[(data.Length + _temp.Length) - ((data.Length + _temp.Length) % _frameSize)];               
+            //        Buffer.BlockCopy(_temp, 0, completeFramesData, 0, _temp.Length);
+            //        if ((data.Length + _temp.Length) % _frameSize == 0)
+            //        {
+            //            Buffer.BlockCopy(data, 0, completeFramesData, _temp.Length, data.Length);
+            //            _temp = null;
+            //            return completeFramesData;
+            //        }
+            //        else
+            //        {
+            //            int bytesToCopy = data.Length + _temp.Length - completeFramesData.Length;
+            //            Buffer.BlockCopy(data, 0, completeFramesData, _temp.Length, bytesToCopy);
+            //            _temp = new byte[data.Length - bytesToCopy];
+            //            Buffer.BlockCopy(data, bytesToCopy, _temp, 0, data.Length - bytesToCopy);
+            //            return completeFramesData;
+            //        }
+            //    }
+            //    else if (data.Length % _frameSize == 0 && _temp == null)
+            //    {
+            //        return data;
+            //    }
+            //    else if (data.Length % _frameSize == 0 && _temp != null)
+            //    {
+            //        byte[] completeFramesData = new byte[(data.Length + _temp.Length) - ((data.Length + _temp.Length) % _frameSize)];
+            //        Buffer.BlockCopy(_temp, 0, completeFramesData, 0, _temp.Length);
+            //        if ((data.Length + _temp.Length) % _frameSize == 0)
+            //        {
+            //            Buffer.BlockCopy(data, 0, completeFramesData, _temp.Length, data.Length);
+            //            _temp = null;
+            //            return completeFramesData;
+            //        }
+            //        else
+            //        {
+            //            int bytesToCopy = data.Length + _temp.Length - completeFramesData.Length;
+            //            Buffer.BlockCopy(data, 0, completeFramesData, _temp.Length, bytesToCopy);
+            //            _temp = new byte[data.Length - bytesToCopy];
+            //            Buffer.BlockCopy(data, bytesToCopy, _temp, 0, data.Length - bytesToCopy);
+            //            return completeFramesData;
+            //        }
+            //    }
+            //    else
+            //        throw new Exception("Something bad hapen!");
+
+            //---------------------------------Вариант от лысого------------------------------------------------------
+            try
             {
-                int bytesToCopy = data.Length - (data.Length % _frameSize);
-                byte[] completeFramesData = new byte[bytesToCopy];
-                Buffer.BlockCopy(data, 0, completeFramesData, 0, bytesToCopy);
-                _temp = new byte[data.Length % _frameSize];
-                Buffer.BlockCopy(data, bytesToCopy, _temp, 0, data.Length % _frameSize);
+                int tempLength = 0;
+
+                if (_temp != null)
+                    tempLength = _temp.Length;
+
+                int bytesToCopy = (tempLength + data.Length) / _frameSize * _frameSize - tempLength;
+
+                byte[] completeFramesData = new byte[bytesToCopy + tempLength];
+
+                if (tempLength != 0)
+                    Buffer.BlockCopy(_temp, 0, completeFramesData, 0, tempLength);
+
+                Buffer.BlockCopy(data, 0, completeFramesData, tempLength, bytesToCopy);
+
+                _temp = null;
+
+                if (bytesToCopy != data.Length)
+                {
+                    _temp = new byte[data.Length - bytesToCopy];
+                    Buffer.BlockCopy(data, bytesToCopy, _temp, 0, _temp.Length);
+                }
+
                 return completeFramesData;
             }
-            else if (data.Length % _frameSize != 0 && _temp != null)
+            catch
             {
-                byte[] completeFramesData = new byte[(data.Length + _temp.Length) - ((data.Length + _temp.Length) % _frameSize)];               
-                Buffer.BlockCopy(_temp, 0, completeFramesData, 0, _temp.Length);
-                if ((data.Length + _temp.Length) % _frameSize == 0)
-                {
-                    Buffer.BlockCopy(data, 0, completeFramesData, _temp.Length, data.Length);
-                    _temp = null;
-                    return completeFramesData;
-                }
-                else
-                {
-                    int bytesToCopy = data.Length + _temp.Length - completeFramesData.Length;
-                    Buffer.BlockCopy(data, 0, completeFramesData, _temp.Length, bytesToCopy);
-                    _temp = new byte[data.Length - bytesToCopy];
-                    Buffer.BlockCopy(data, bytesToCopy, _temp, 0, data.Length - bytesToCopy);
-                    return completeFramesData;
-                }
+                throw;
             }
-            else if (data.Length % _frameSize == 0 && _temp == null)
-            {
-                return data;
-            }
-            else if (data.Length % _frameSize == 0 && _temp != null)
-            {
-                byte[] completeFramesData = new byte[(data.Length + _temp.Length) - ((data.Length + _temp.Length) % _frameSize)];
-                Buffer.BlockCopy(_temp, 0, completeFramesData, 0, _temp.Length);
-                if ((data.Length + _temp.Length) % _frameSize == 0)
-                {
-                    Buffer.BlockCopy(data, 0, completeFramesData, _temp.Length, data.Length);
-                    _temp = null;
-                    return completeFramesData;
-                }
-                else
-                {
-                    int bytesToCopy = data.Length + _temp.Length - completeFramesData.Length;
-                    Buffer.BlockCopy(data, 0, completeFramesData, _temp.Length, bytesToCopy);
-                    _temp = new byte[data.Length - bytesToCopy];
-                    Buffer.BlockCopy(data, bytesToCopy, _temp, 0, data.Length - bytesToCopy);
-                    return completeFramesData;
-                }
-            }
-            else
-                throw new Exception("Something bad hapen!");
+
 
         }
 
