@@ -38,6 +38,7 @@ namespace NCE.Processing.Converters
 
         public string ModuleName
         { get { return "FFTConverter"; } }
+
         public void Complete()
         {
             _converterBlock.Complete();

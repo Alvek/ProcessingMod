@@ -98,12 +98,13 @@ namespace NCE.Processing.Converters
                 int idx = 0;
                 double AscanStart = _dataStructManager.GetAscanStartTime(data.RawData, _dataStructManager.FrameSize * spectrIdx);
                 double AscanEnd = _dataStructManager.GetAscanEndTime(data.RawData, _dataStructManager.FrameSize * spectrIdx);
-                double StepA = (AscanEnd - AscanStart) / (BitConverter.ToUInt16(data.RawData, spectrIdx + _dataStructManager.AscanPointCountOffset) - 1) / 1000;
-                double StepF = 1 / StepA / (data.Spectr[0].SpectrFFTData.Length * 2);
+                double StepA = (AscanEnd - AscanStart) / 100;// (BitConverter.ToUInt16(data.RawData, spectrIdx + _dataStructManager.AscanPointCountOffset) - 1) / 1000;
+                double StepF = 1 / StepA;// / (data.Spectr[0].SpectrFFTData.Length * 2);
 
                 foreach (var point in spect.SpectrFFTData)
                 {
-                    _tempDict[spect.ChannelId].Gates[0].GatePoints.Add(new PointPair(AscanStart + StepF * idx, point.Real * point.Real + point.Imaginary * point.Imaginary));
+                    //_tempDict[spect.ChannelId].Gates[0].GatePoints.Add(new PointPair(AscanStart + StepF * idx, point.Real * point.Real + point.Imaginary * point.Imaginary));
+                    _tempDict[spect.ChannelId].Gates[0].GatePoints.Add(new PointPair(StepF * idx, Math.Sqrt(point.Real * point.Real + point.Imaginary * point.Imaginary)));
                     idx++;
                 }
                 spectrIdx++;
