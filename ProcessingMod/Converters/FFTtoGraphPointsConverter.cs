@@ -98,7 +98,9 @@ namespace NCE.Processing.Converters
                 int idx = 0;
                 double AscanStart = _dataStructManager.GetAscanStartTime(data.RawData, _dataStructManager.FrameSize * spectrIdx);
                 double AscanEnd = _dataStructManager.GetAscanEndTime(data.RawData, _dataStructManager.FrameSize * spectrIdx);
-                double StepA = (AscanEnd - AscanStart) / 100;// (BitConverter.ToUInt16(data.RawData, spectrIdx + _dataStructManager.AscanPointCountOffset) - 1) / 1000;
+                double AscanPoints = _dataStructManager.GetAscanPointsCount(data.RawData, _dataStructManager.FrameSize * spectrIdx);
+                AscanEnd = AscanStart + (AscanEnd - AscanStart) * 512 / AscanPoints;
+                double StepA = (AscanEnd - AscanStart) / 1000;// (BitConverter.ToUInt16(data.RawData, spectrIdx + _dataStructManager.AscanPointCountOffset) - 1) / 1000;
                 double StepF = 1 / StepA;// / (data.Spectr[0].SpectrFFTData.Length * 2);
 
                 foreach (var point in spect.SpectrFFTData)

@@ -107,7 +107,7 @@ namespace NCE.Processing.Drawing
 
         public void Fault(Exception exception)
         {
-            throw new NotImplementedException();
+            ((IPropagatorBlock<List<Channel>, List<Channel>>)_innerBuffer).Fault(exception);
         }
 
         public IDisposable LinkTo(ITargetBlock<List<Channel>> target, DataflowLinkOptions linkOptions)
