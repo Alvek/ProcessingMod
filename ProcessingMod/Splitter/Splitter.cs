@@ -267,9 +267,16 @@ namespace NCE.Processing
                     target.Completion.Wait();//Ожидание завершения работы модуля
                 }
                 catch (AggregateException ex)
-                { }
+                {
+                    foreach (var innerEx in ex.InnerExceptions)
+                    {
+                        _logingAct(innerEx.Message);
+                    }
+                }
                 catch (Exception ex)
-                { }
+                {
+                    _logingAct(ex.Message);
+                }
             }
             var tempLightBarrierList = _lightBarrierTarget.ToList();
             foreach (var target in tempLightBarrierList)
