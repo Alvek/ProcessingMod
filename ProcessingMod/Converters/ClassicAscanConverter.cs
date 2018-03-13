@@ -172,12 +172,12 @@ namespace NCE.Processing.Drawing
             //double x = BitConverter.ToUInt32(rawArray, manager.PointXOffset + coordinateOffset) * _multiplier;// - _channelsStartOffset[id];
 
             int idx = 0;
-            int scansMaxCount = BitConverter.ToUInt16(rawArray, coordinateOffset + manager.AscanPointCountOffset) - 1;
+            int scansMaxCount = BitConverter.ToUInt16(rawArray, coordinateOffset + manager.AscanPointCount) - 1;
             int startTime = manager.GetAscanStartTime(rawArray, coordinateOffset);
             int endTime = manager.GetAscanEndTime(rawArray, coordinateOffset);
             foreach (var point in manager.AscanIterator(rawArray, coordinateOffset))
             {
-                double x = (startTime + (double)(idx * (endTime - startTime)) / scansMaxCount) / 100;
+                double x = (startTime + (double)(idx * (endTime - startTime)) / scansMaxCount) / 1000;
                 res.Add(new PointPair(x, point));
                 idx++;
             }

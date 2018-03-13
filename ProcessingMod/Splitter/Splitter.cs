@@ -274,7 +274,7 @@ namespace NCE.Processing
             {
                 target.Complete();
                 target.Completion.Wait();//Ожидание завершения работы модуля
-            }
+             }
         }
     }
 }
