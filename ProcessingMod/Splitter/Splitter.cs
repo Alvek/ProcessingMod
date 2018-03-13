@@ -66,6 +66,7 @@ namespace NCE.Processing
         //private DateTime _endTime;
         private bool _startTimeSaved = false;
         //private bool _endTimeSaved = false;
+        private Action<string> _logingAct = (string s) => { };
 
         public double LightBarrierCoord
         {
@@ -92,9 +93,10 @@ namespace NCE.Processing
         /// <summary>
         /// Инициализация модуля
         /// </summary>
-        public DataSplitter(DataTypeManager manager, double multiplier, Dictionary<int, double> channelsStartOffset)//, List<Offset> probeOffset)
+        public DataSplitter(DataTypeManager manager, double multiplier, Dictionary<int, double> channelsStartOffset, Action<string> logingAct)//, List<Offset> probeOffset)
         {
-            _manager = manager;
+            _logingAct = logingAct;
+               _manager = manager;
             _multiplier = multiplier;
             _channelsStartOffset = channelsStartOffset;
             _splitterBlock = new ActionBlock<byte[]>(new Action<byte[]>(Split), new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1, });
