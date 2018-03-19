@@ -125,7 +125,7 @@ namespace NCE.Processing
             /*Dictionary<int, double>*/double channelsDeadZoneStartOffset, /*Dictionary<int, double>*/double channelsDeadZoneEndOffset, double multiplier)//, List<Offset> probeOffset)
         {
             if (manager.DetOffset == -1)
-                throw new ArgumentOutOfRangeException("Det is not present in DataType!");
+                throw new ArgumentOutOfRangeException("manager", "Det is not present in DataType!");
 
             //_defCaclSettings = defCaclSettings;
             _defCaclSettings = new LinearDefCalcSettings(defCalcSettings, 0);

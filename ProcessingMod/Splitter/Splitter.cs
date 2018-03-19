@@ -121,7 +121,7 @@ namespace NCE.Processing
         public void RegisterRawDataSplitterTarget(T newTarget)
         {
             if (newTarget == null)
-                throw new ArgumentNullException("Splitter target can't be null!");
+                throw new ArgumentNullException("newTarget", "Splitter target can't be null!");
             _dataTarget.Add(newTarget);
         }
         /// <summary>
@@ -131,7 +131,7 @@ namespace NCE.Processing
         public void RegisterLightBarrierSplitterTarget(ILightBarrierSplitterTarget newTarget)
         {
             if (newTarget == null)
-                throw new ArgumentNullException("Splitter target can't be null!");
+                throw new ArgumentNullException("newTarget", "Splitter target can't be null!");
             _lightBarrierTarget.Add(newTarget);
         }
 

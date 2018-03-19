@@ -63,7 +63,7 @@ namespace NCE.Processing.LenghtCalc
 
         public void Fault(Exception exception)
         {
-            throw new NotImplementedException();
+            ((ITargetBlock<byte[]>)_actBlock).Fault(exception);
         }
 
         public void PostData(byte[] raw)

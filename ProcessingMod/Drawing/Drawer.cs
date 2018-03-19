@@ -99,16 +99,16 @@ namespace NCE.Processing.Drawing
         public Drawer(ZedGraphControl[] zedControls, DrawSettings[] drawSettings, DataTypeManager dataStructManager, PointOverflowPolicy policy)
         {
             if (zedControls == null)
-                throw new ArgumentNullException("ZedControls array can't be null!");
+                throw new ArgumentNullException("zedControls", "ZedControls array can't be null!");
             if (zedControls.Length == 0)
-                throw new ArgumentException("ZedControls array have zero lenght!");
+                throw new ArgumentException("zedControls", "ZedControls array have zero lenght!");
             if (drawSettings == null)
-                throw new ArgumentNullException("DrawSettings array can't be null!");
+                throw new ArgumentNullException("drawSettings", "DrawSettings array can't be null!");
             if (drawSettings.Length == 0)
-                throw new ArgumentException("DrawSettings array have zero lenght!");
+                throw new ArgumentException("drawSettings", "DrawSettings array have zero lenght!");
 
             if (zedControls.Length != drawSettings.Length)
-                throw new ArgumentException("ZedGraph controls and drawSettings count different!");
+                throw new ArgumentException("zedControls", "ZedGraph controls and drawSettings count different!");
 
             _policy = policy;
             _zedControls = zedControls;

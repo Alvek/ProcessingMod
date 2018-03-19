@@ -86,7 +86,7 @@ namespace NCE.Processing.Drawing
             set
             {
                 if (value == null)
-                    throw new ArgumentNullException("PointPair can't be null!");
+                    throw new ArgumentNullException("index", "PointPair can't be null!");
 
                 PointPair local = null;
                 //Запись точки с учетом возможной мультипоточной записи точек

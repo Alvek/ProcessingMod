@@ -30,7 +30,7 @@ namespace NCE.Processing.Drawnig
         public RawPointsCombineConverter(CombineSettings combSett, DataTypeManager manager, double multiplier)
         {
             if (combSett.Rules.Count < 1)
-                throw new ArgumentException("No combine rules set!");
+                throw new ArgumentException("combSett", "No combine rules set!");
 
             _manager = manager;
             _step = multiplier;

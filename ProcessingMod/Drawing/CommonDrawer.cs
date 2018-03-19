@@ -126,13 +126,13 @@ namespace NCE.Processing.Drawing
             for (int i = 0; i < channelSettings.Length; i++)
             {
                 if (channelSettings[i].ChannelIdx < 0)
-                    throw new ArgumentException("Channel idx is not set!");
+                    throw new ArgumentException("channelSettings", "Channel idx is not set!");
                 if (channelSettings[i].ChannelCaption == null)
-                    throw new ArgumentNullException("Channel caption is not set!");
+                    throw new ArgumentNullException("channelSettings", "Channel caption is not set!");
                 if (channelSettings[i].GateColors == null)
-                    throw new ArgumentNullException("Channel gate colors is null!");
+                    throw new ArgumentNullException("channelSettings", "Channel gate colors is null!");
                 if (channelSettings[i].GateColors.Count == 0)
-                    throw new ArgumentNullException("Channel gate colors lenght is zero!");
+                    throw new ArgumentNullException("channelSettings", "Channel gate colors lenght is zero!");
             }
             _channelSettings = channelSettings;
         }        

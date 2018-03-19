@@ -58,7 +58,7 @@ namespace NCE.Processing.Drawing
         public ClassicAscanConverter(DataTypeManager dataStructManager, Dictionary<int, double> channelsStartOffset, double multiplier, int refreshCount, AscanConverterWorkingMod mod)
         {
             if (refreshCount < 1)
-                throw new ArgumentOutOfRangeException("Refresh count < 1!");
+                throw new ArgumentOutOfRangeException("refreshCount", "Refresh count < 1!");
 
             _multiplier = multiplier;
             _dataStructManager = dataStructManager;
