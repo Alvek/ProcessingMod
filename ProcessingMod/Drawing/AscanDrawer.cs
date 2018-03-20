@@ -178,6 +178,7 @@ namespace NCE.Processing.Drawing
                     myCurve.Symbol.Fill.Type = FillType.Solid;
                     // Размер ромбиков
                     myCurve.Symbol.Size = 1;
+                    myCurve.Label.Text = settings[i].ChannelSettings[0].ChannelCaption;
                 }
                 pane.AxisChange();
             }
