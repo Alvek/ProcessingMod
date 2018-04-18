@@ -141,20 +141,6 @@ namespace NCE.Processing
         /// <param name="rawData"></param>
         public void PostData(byte[] rawData)
         {
-            if (_lightBarrierReached && !_lightBarriedSaved)
-            {
-                _barrierCoord = ParseCoord(rawData);
-
-                SendBarrierCoord();
-
-                _lightBarriedSaved = true;
-            }
-            if (!_startTimeSaved)
-            {
-                _startTime = DateTime.Now;
-                _startTimeSaved = true;
-            }
-
             _innerBuffer.Post(rawData);
         }
 
@@ -227,14 +213,30 @@ namespace NCE.Processing
         /// <summary>
         /// Передача данных подписанным модулям
         /// </summary>
-        /// <param name="channels">Сырые данные</param>
-        private void Split(byte[] channels)
+        /// <param name="rawData">Сырые данные</param>
+        private void Split(byte[] rawData)
         {
+            if (_lightBarrierReached && !_lightBarriedSaved)
+            {
+                _barrierCoord = ParseCoord(rawData);
+
+                SendBarrierCoord();
+
+                _lightBarriedSaved = true;
+            }
+            if (!_startTimeSaved)
+            {
+                _startTime = DateTime.Now;
+                _startTimeSaved = true;
+            }
+
             var tempList = _dataTarget.ToList();
+
+
 
             foreach (var target in tempList)
             {
-                target.PostData(channels);
+                target.PostData(rawData);
             }
         }
 
