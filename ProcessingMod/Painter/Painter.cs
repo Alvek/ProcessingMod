@@ -301,6 +301,8 @@ namespace NCE.Processing
                                 _startStopCoord[id][gateIdx][_startStopCoord[id][gateIdx].Count - 1].DefectStarted)//Закрываем дефект и создаем новый неинициализированый
                             {
                                 _startStopCoord[id][gateIdx][_startStopCoord[id][gateIdx].Count - 1].DefectEndReached = true;
+                                if (_startStopCoord[id][gateIdx][_startStopCoord[id][gateIdx].Count - 1].StopCoord == double.MaxValue)
+                                    _startStopCoord[id][gateIdx][_startStopCoord[id][gateIdx].Count - 1].StopCoord = _startStopCoord[id][gateIdx][_startStopCoord[id][gateIdx].Count - 1].StartCoord + _multiplier;
                                 _startStopCoord[id][gateIdx].Add(new StartStopCoord());
                             }
 
