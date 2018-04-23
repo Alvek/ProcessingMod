@@ -1,7 +1,6 @@
 ﻿using NCE.CommonData;
 using NCE.ModulesCommonData;
 using NCE.Processing.Drawing;
-using NCE.Processing.Drawing;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
